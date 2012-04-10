@@ -81,8 +81,8 @@ Value : LocalNotification<br />
 
 4 ) Follow example code below.
 
-
-
+<br />
+<br />
 
 
 
@@ -121,14 +121,14 @@ project
 (assuming your index.html is setup like tree above)
 
 
-5) Configure your AndroidManefest.xml
-Add
+5) Configure your AndroidManefest.xml<br />
+Add<br />
 <pre><code>
-<!-- Local notification reciever -->
-<receiver android:name="jp.wizcorp.phonegap.plugin.LocalNotification.LocalNotificationManager"/>
+/<!-- Local notification reciever --/>
+/<receiver android:name="jp.wizcorp.phonegap.plugin.LocalNotification.LocalNotificationManager"//>
 </pre></code>
-
-Somewhere inside your <application></application> tags
+<br />
+Somewhere inside your <pre><code>/<application/>/</application/></pre></code> tags
 
 
 <br />
