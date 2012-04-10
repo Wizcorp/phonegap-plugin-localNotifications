@@ -4,6 +4,15 @@
 //	Copyright (c) Greg Allen 2011
 //	MIT Licensed
 
+
+/**
+ * 
+ * @modding author Ally Ogilvie
+ * @WizCorp Inc. [ Incorporated Wizards ] 2011
+ * @file LocalNotification.m for PhoneGap
+ *
+ */
+
 #import "LocalNotification.h"
 #import "WizDebugLog.h"
 
