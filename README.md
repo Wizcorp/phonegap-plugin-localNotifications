@@ -124,7 +124,6 @@ project
 5) Configure your AndroidManefest.xml<br />
 Add<br />
 <pre><code>
-</!-- Local notification reciever --/>
 <receiver android:name="jp.wizcorp.phonegap.plugin.LocalNotification.LocalNotificationManager"//>
 </pre></code>
 <br />
