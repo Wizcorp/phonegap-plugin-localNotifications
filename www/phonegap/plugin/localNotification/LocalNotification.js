@@ -1,13 +1,10 @@
 /**
-	Phonegap LocalNotification Plugin
-	Copyright (c) Greg Allen 2011
-	MIT Licensed
-
-	Usage:
-	plugins.localNotification.add({ date: new Date(), message: 'This is a notification', badge: 1, id: 123 });
-	plugins.localNotification.cancel(123);
-	plugins.localNotification.cancelAll();
-**/
+ * 
+ * @author Ally Ogilvie
+ * @copyright WizCorp Inc. [ Incorporated Wizards ] 2011
+ * @file LocalNotification.m for PhoneGap
+ *
+ */
 
 var localNotification = {
 
@@ -37,7 +34,8 @@ var localNotification = {
 /*
 *
 *   Example functions
-*/
+*
+
 function sendNotif() {
     myOptions = {
         seconds: 30,
@@ -58,3 +56,7 @@ function cancelAllNotif() {
     localNotification.cancelAll();
     
 };
+
+
+
+*/
