@@ -10,20 +10,20 @@ var localNotification = {
 
 	add : function(id, options) {
 
-		return PhoneGap.exec(null, null, "LocalNotification", "addNotification", [id, options]);
+		return cordova.exec(null, null, "LocalNotification", "addNotification", [id, options]);
 	},
 
 	cancel : function(id) {
-		return PhoneGap.exec(null, null, "LocalNotification", "cancelNotification", [id]);
+		return cordova.exec(null, null, "LocalNotification", "cancelNotification", [id]);
 	},
 	
 	cancelAll : function() {
-        return PhoneGap.exec(null, null,"LocalNotification", "cancelAllNotifications", []);
+        return cordova.exec(null, null,"LocalNotification", "cancelAllNotifications", []);
     },
     
     queue : function(id, options) {
         
-		return PhoneGap.exec(null, null, "LocalNotification", "queueNotification", [id, options]);
+		return cordova.exec(null, null, "LocalNotification", "queueNotification", [id, options]);
 	}
     
 

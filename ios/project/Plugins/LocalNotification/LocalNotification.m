@@ -9,7 +9,7 @@
  * 
  * @modding author Ally Ogilvie
  * @WizCorp Inc. [ Incorporated Wizards ] 2011
- * @file LocalNotification.m for PhoneGap
+ * @file LocalNotification.m for Cordova
  *
  */
 
@@ -21,7 +21,7 @@
 
 static NSMutableDictionary *notificationQueue = nil;
 
--(PGPlugin*) initWithWebView:(UIWebView*)theWebView
+-(CDVPlugin*) initWithWebView:(UIWebView*)theWebView
 {
     
     self = (LocalNotification*)[super initWithWebView:theWebView];

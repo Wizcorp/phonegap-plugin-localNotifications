@@ -8,14 +8,19 @@
  * 
  * @modding author Ally Ogilvie
  * @WizCorp Inc. [ Incorporated Wizards ] 2011
- * @file LocalNotification.h for PhoneGap
+ * @file LocalNotification.h for Cordova
  *
  */
 
 #import <Foundation/Foundation.h>
-#import <PhoneGap/PGPlugin.h>
+#import <Cordova/CDVPlugin.h>
+#ifdef CORDOVA_FRAMEWORK
+#import <Cordova/CDVPlugin.h>
+#else
+#import "CDVPlugin.h"
+#endif
 
-@interface LocalNotification : PGPlugin {
+@interface LocalNotification : CDVPlugin {
     
 }
 
