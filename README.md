@@ -3,8 +3,14 @@
 
 # PLUGIN: 
 
-phonegap-plugin-localNotifications
+phonegap-plugin-localNotifications<br />
+version : 1.7<br />
+last update : 10/05/2012<br />
 
+
+# CHANGELOG: 
+<br />
+- Updated for cordova 1.7 (iOS only)
 
 
 # DESCRIPTION :
@@ -86,49 +92,6 @@ Value : LocalNotification<br />
 
 
 
-# INSTALL (Android): #
-
-Project tree<br />
-
-<pre><code>
-project
-	/ assets
-		/ www
-			-index.html
-			/ assets [store your app assets here]
-			/ phonegap
-				/js
-					/ phonegap.js
-				/ plugin
-					/ localNotification
-						/ localNotification.js	
-	/ src
-		/ jp/wizcorp/phonegap/plugin/LocalNotification
-			/ LocalNotificationManager.java
-			/ LocalNotificationPlugin.java
-</code></pre>
-
-
-
-1 ) Arrange files to structure seen above.
-
-
-2 ) Remember to add the plugin to plugins.xml
-
-
-3 ) Add \<script\> tag to your index.html<br />
-\<script type="text/javascript" charset="utf-8" src="phonegap/plugin/localNotification/localNotification.js"\>\</script\><br />
-(assuming your index.html is setup like tree above)
-
-
-5) Configure your AndroidManefest.xml<br />
-Add<br />
-	\<receiver android:name="jp.wizcorp.phonegap.plugin.LocalNotification.LocalNotificationManager"/\>
-<br />
-Somewhere inside your <br />
-	\<application\>\</application\>
-<br />
-tags
 
 
 <br />
