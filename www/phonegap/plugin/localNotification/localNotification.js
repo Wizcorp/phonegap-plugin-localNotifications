@@ -8,6 +8,10 @@
 
 var localNotification = {
 
+    launch : function(standardLaunchFunc, launchDueToNotificationFunc) {
+        return cordova.exec(standardLaunchFunc, launchDueToNotificationFunc, "LocalNotification", "launch", []);
+    },
+
 	add : function(id, options) {
 
 		return cordova.exec(null, null, "LocalNotification", "addNotification", [id, options]);
@@ -24,8 +28,15 @@ var localNotification = {
     queue : function(id, options) {
         
 		return cordova.exec(null, null, "LocalNotification", "queueNotification", [id, options]);
-	}
-    
+	},
+
+    getApplicationBadge : function(s) {
+        return cordova.exec(s, null, "LocalNotification", "getApplicationBadge", []);
+    },
+        
+    setApplicationBadge : function(intValue, s) {
+        return cordova.exec(s, null, "LocalNotification", "setApplicationBadge", [intValue]);
+    }
 
 }
 

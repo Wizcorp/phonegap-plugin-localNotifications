@@ -4,13 +4,13 @@
 # PLUGIN: 
 
 phonegap-plugin-localNotifications<br />
-version : 1.7<br />
-last update : 10/05/2012<br />
+version : 1.9<br />
+last update : 11/02/2012<br />
 
 
 # CHANGELOG: 
 <br />
-- Updated for cordova 1.7 (iOS only)
+- Updated for cordova 1.9 (iOS only)
 
 
 # DESCRIPTION :
@@ -59,31 +59,85 @@ Value : LocalNotification<br />
 \<script type="text/javascript" charset="utf-8" src="phonegap/plugin/localNotification/localNotification.js"\>\</script\><br />
 (assuming your index.html is setup like tree above)
 
-3.5) For sending all your queued notifications when app is killed or going to background add this code to your AppDelegate.m
+3.1) For observing and responding to notifications in JS, add code to your AppDelegate.m and your index.html
 
+AppDelegate.m
 <pre><code>
-#import "LocalNotification.h"
-
-
-- (void)applicationWillResignActive:(UIApplication *)application
+// this happens when we are running and receive a local notification
+- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
 {
-	// apply any queued notifications
-    [LocalNotification emptyNotificationQueue];
-}
-
-- (void)applicationWillResignActive:(UIApplication *)application
-{
-	// apply any queued notifications
-    [LocalNotification emptyNotificationQueue];
-}
-
-- (void)applicationDidEnterBackground:(UIApplication *)application
-{
-	// apply any queued notifications
-    [LocalNotification emptyNotificationQueue];
+	// calls into javascript global function 'handleReceivedLocalNotification'
+    NSDictionary *userInfo = [notification userInfo];
+    
+    NSString *active;
+    if ( [application applicationState] == UIApplicationStateActive ) {
+        active = @"true";
+    } else {
+        active = @"false";        
+    }
+    
+    NSString* jsString = [NSString stringWithFormat:@"handleReceivedLocalNotification(\"%@\", %@);", [userInfo objectForKey:@"notificationId"], active];
+    [self.viewController.webView stringByEvaluatingJavaScriptFromString:jsString];
 }
 </pre></code>
 
+index.html
+<pre><code>
+    function decrementBadgeValue(badge)
+    {
+        if ( badge > 0 ) {
+            badge = badge - 1;
+        }
+        window.localNotification.setApplicationBadge(badge);
+    }
+        
+    function handleReceivedLocalNotification(notificationId, active)
+    {
+        // Update the badge value.
+        window.localNotification.getApplicationBadge(decrementBadgeValue);
+        
+        var message = "Received local notificationId: " + JSON.stringify(notificationId);
+        console.log( message );
+        if ( active ) {
+			// Your code to handle notification (app was running in foreground).
+            console.log("Application was ACTIVE");
+        } else {
+			// Your code to handle notification (app was running in background).
+            console.log("Application was NOT ACTIVE");
+        }
+    }
+</pre></code>
+
+3.2) For observing and responding to notifications in JS, when the app is
+     launched due to a local notification some special code is required.
+     Note: This code addresses the case where the app was *NOT* running in the
+     background but the app was launched in response to the user responding to a
+	 local notification.  For the case where the app was already running, see
+     the example code in 3.1).
+
+index.html
+<pre><code>
+    function startApp()
+    {
+        // Do something normal here.
+        alert("App started normally.");
+    }
+        
+    function startAppDueToNotification( notificationId )
+    {
+        // Do something special here using the notificationId.
+        alert("App started due to notification: " + JSON.stringify(notificationId));
+    }
+
+	function onDeviceReady()
+	{
+        if (!window.localNotification) {
+            alert("Could not find localNotification");
+        }
+        
+        window.localNotification.launch(startApp, startAppDueToNotification);
+	}
+</pre></code>
 
 4 ) Follow example code below.
 
@@ -140,3 +194,16 @@ localNotification.cancel(Int id);
 
 Cancel all notifications<br />
 localNotification.cancelAll(); 
+<br />
+
+Set application badge value <br />
+localNotification.setApplicationBadge(Int value); 
+<br />
+
+Get the application badge value<br />
+localNotification.getApplicationBadge(getSuccesFunction); 
+<br />
+
+Handle application launch due to notification<br />
+localNotification.launch(standardLaunchFunction, launchDueToNotificationFunction); 
+<br />

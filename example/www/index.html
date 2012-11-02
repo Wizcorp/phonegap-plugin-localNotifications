@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<!--
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+# 
+# http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+#  KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+-->
+  <head>
+  <title></title>
+  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no;" />
+	<meta charset="utf-8">
+
+
+	<!-- iPad/iPhone specific css below, add after your main css >
+	<link rel="stylesheet" media="only screen and (max-device-width: 1024px)" href="ipad.css" type="text/css" />		
+	<link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="iphone.css" type="text/css" />		
+	-->
+	<!-- If your application is targeting iOS BEFORE 4.0 you MUST put json2.js from http://www.JSON.org/json2.js into your www directory and include it here -->
+	<script type="text/javascript" charset="utf-8" src="cordova-1.9.0.js"></script>
+    <script type="text/javascript" charset="utf-8" src="phonegap/plugin/localNotification/LocalNotification.js"></script>
+    <script type="text/javascript">
+
+
+	// If you want to prevent dragging, uncomment this section
+	/*
+	function preventBehavior(e) 
+	{ 
+      e.preventDefault(); 
+    };
+	document.addEventListener("touchmove", preventBehavior, false);
+	*/
+	
+	/* If you are supporting your own protocol, the var invokeString will contain any arguments to the app launch.
+	see http://iphonedevelopertips.com/cocoa/launching-your-own-application-via-a-custom-url-scheme.html
+	for more details -jm */
+	/*
+	function handleOpenURL(url)
+	{
+		// TODO: do something with the url passed in.
+	}
+	*/
+    
+    function decrementBadgeValue(badge)
+    {
+        if ( badge > 0 ) {
+            badge = badge - 1;
+        }
+        window.localNotification.setApplicationBadge(badge);
+    }
+        
+    function handleReceivedLocalNotification(notificationId, active)
+    {
+        // Decrement badge value.
+        window.localNotification.getApplicationBadge(decrementBadgeValue);
+        
+        var message = "Received local notificationId: " + JSON.stringify(notificationId);
+        console.log( message );
+        if ( active ) {
+            console.log("Application was ACTIVE");
+            alert( message );
+        } else {
+            console.log("Application was NOT ACTIVE");
+            // NOTE: alert() is not displaying correctly in this case on iOS.
+            //       For some reason it shows up behind the webview.  But putting the app
+            //       in the background and then restoring it again makes the alert view
+            //       show up.  This may be a bug.  Displaying the alert is disabled for
+            //       this reason.
+            //alert( message );
+        }
+    }
+	
+    function startApp()
+    {
+        // Do something normal here.
+        alert("App started normally.");
+    }
+        
+    function startAppDueToNotification( notificationId )
+    {
+        // Do something special here using the notificationId.
+        // Decrement badge value.
+        window.localNotification.getApplicationBadge(decrementBadgeValue);
+        alert("App started due to notification: " + JSON.stringify(notificationId));
+    }
+
+	function onBodyLoad()
+	{
+        // Do something special here using the notificationId.
+		document.addEventListener("deviceready", onDeviceReady, false);
+	}
+	
+	/* When this function is called, Cordova has been initialized and is ready to roll */
+	/* If you are supporting your own protocol, the var invokeString will contain any arguments to the app launch.
+	see http://iphonedevelopertips.com/cocoa/launching-your-own-application-via-a-custom-url-scheme.html
+	for more details -jm */
+	function onDeviceReady()
+	{
+        if (!window.localNotification) {
+            alert("Could not find localNotification");
+        }
+        
+        // If handling startup notification is required, use this method.
+        window.localNotification.launch(startApp, startAppDueToNotification);
+	}
+        
+    function addNotification( scheduleImmediately )
+    {
+        var msg = prompt("Please a notification message:","test");
+        if ( msg ) {
+            var seconds = parseInt(prompt("Please a time interval in seconds (integer):", 10));
+            if ( seconds ) {
+                var badge = parseInt(prompt("Please a badge value (integer):", 1));
+                if ( badge ) {
+                    var options = {
+                        "message" : msg,
+                        "seconds" : seconds,
+                        "badge" : badge,
+                    };
+                    if ( scheduleImmediately ) {
+                        window.localNotification.add("GAME_NOTIFICATION", options);
+                        alert("Successfully scheduled:\n" + JSON.stringify(options));
+                    } else {
+                        window.localNotification.queue("COME_BACK_AND_PLAY", options);
+                        alert("Successfully queued (will be scheduled after quitting the app):\n" + JSON.stringify(options));
+                    }
+                }
+            }
+        }
+    }
+        
+    function cancelNotification()
+    {
+        window.localNotification.cancel("GAME_NOTIFICATION");
+    }
+    
+    function cancelAllNotifications()
+    {
+        window.localNotification.cancelAll();
+    }
+    
+    </script>
+  </head>
+  <body onload="onBodyLoad()">
+      <h1>localNotification plugin!</h1>
+      <input type="button" id="push_button" value="Add Notification" onclick="addNotification(true)" />
+      <input type="button" id="push_button" value="Queue Notification" onclick="addNotification(false)" />
+      <input type="button" id="push_button" value="Cancel Notification" onclick="cancelNotification()" />
+      <input type="button" id="push_button" value="Cancel All Notifications" onclick="cancelAllNotifications()" />
+      <p>Experiment by pressing the buttons to set or cancel notifications. Also see the console log.<br />
+      <p><strong>Add Notification</strong> schedules a notification.<br />
+      <p><strong>Queue Notification</strong> schedules the notification only when the app is moved into the background.<br />
+      <p><strong>Cancel Notification</strong> cancels a single scheduled notification by ID.<br />
+      <p><strong>Cancel All Notification</strong> cancels all pending scheduled notifications.<br />
+  </body>
+</html>

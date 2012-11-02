@@ -1,1 +1,4 @@
 .DS_Store
+example/www/phonegap/*
+example/ios/exampleLocalNotifications.xcodeproj/xcuserdata/*
+example/ios/exampleLocalNotifications.xcodeproj/project.xcworkspace/*
