@@ -117,19 +117,11 @@
 // this happens when we are running and receive a local notification
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
 {
-	// calls into javascript global function 'handleReceivedLocalNotification'
     NSDictionary *userInfo = [notification userInfo];
     
-    NSString *active;
-    if ( [application applicationState] == UIApplicationStateActive ) {
-        active = @"true";
-    } else {
-        active = @"false";        
-    }
-    
-    NSString* jsString = [NSString stringWithFormat:@"handleReceivedLocalNotification(\"%@\", %@);", [userInfo objectForKey:@"notificationId"], active];
-    NSLog(@"CALLING JAVASCRIPT METHOD: %@", jsString);
-    [self.viewController.webView stringByEvaluatingJavaScriptFromString:jsString];
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"WizLocalNoficationReceived"
+                                                                                         object:self
+                                                                                       userInfo:userInfo]];
 }
 
 // this happens while we are running ( in the background, or from within our own app )

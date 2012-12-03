@@ -6,11 +6,13 @@
  *
  */
 
-var localNotification = {
+if (window.cordova) {
+    window.document.addEventListener("deviceready", function () {
+        cordova.exec(null, null, "LocalNotification", "ready", []);
+    }, false);
+}
 
-    launch : function(standardLaunchFunc, launchDueToNotificationFunc) {
-        return cordova.exec(standardLaunchFunc, launchDueToNotificationFunc, "LocalNotification", "launch", []);
-    },
+var localNotification = {
 
 	add : function(id, options) {
 

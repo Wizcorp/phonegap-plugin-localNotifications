@@ -39,8 +39,7 @@
 
 	// If you want to prevent dragging, uncomment this section
 	/*
-	function preventBehavior(e) 
-	{ 
+	function preventBehavior(e) { 
       e.preventDefault(); 
     };
 	document.addEventListener("touchmove", preventBehavior, false);
@@ -50,82 +49,51 @@
 	see http://iphonedevelopertips.com/cocoa/launching-your-own-application-via-a-custom-url-scheme.html
 	for more details -jm */
 	/*
-	function handleOpenURL(url)
-	{
+	function handleOpenURL(url) {
 		// TODO: do something with the url passed in.
 	}
 	*/
     
-    function decrementBadgeValue(badge)
-    {
+    function decrementBadgeValue(badge) {
         if ( badge > 0 ) {
             badge = badge - 1;
         }
         window.localNotification.setApplicationBadge(badge);
     }
         
-    function handleReceivedLocalNotification(notificationId, active)
-    {
-        // Decrement badge value.
-        window.localNotification.getApplicationBadge(decrementBadgeValue);
-        
-        var message = "Received local notificationId: " + JSON.stringify(notificationId);
-        console.log( message );
-        if ( active ) {
-            console.log("Application was ACTIVE");
-            alert( message );
+    function onReceivedLocalNotification(event) {
+        var activeMessage;
+        if ( event.active === true ) {
+            activeMessage = ' while app was active';
         } else {
-            console.log("Application was NOT ACTIVE");
-            // NOTE: alert() is not displaying correctly in this case on iOS.
-            //       For some reason it shows up behind the webview.  But putting the app
-            //       in the background and then restoring it again makes the alert view
-            //       show up.  This may be a bug.  Displaying the alert is disabled for
-            //       this reason.
-            //alert( message );
+            activeMessage = ' while app was inactive';
         }
+        var message = "Received local notificationId: " + event.notificationId + activeMessage;
+        console.log(message);
+        navigator.notification.alert(message);
     }
 	
-    function startApp()
-    {
-        // Do something normal here.
-        alert("App started normally.");
-    }
-        
-    function startAppDueToNotification( notificationId )
-    {
-        // Do something special here using the notificationId.
-        // Decrement badge value.
-        window.localNotification.getApplicationBadge(decrementBadgeValue);
-        alert("App started due to notification: " + JSON.stringify(notificationId));
-    }
-
-	function onBodyLoad()
-	{
-        // Do something special here using the notificationId.
+	function onBodyLoad() {
 		document.addEventListener("deviceready", onDeviceReady, false);
+		document.addEventListener("receivedLocalNotification", onReceivedLocalNotification, false);
 	}
 	
 	/* When this function is called, Cordova has been initialized and is ready to roll */
 	/* If you are supporting your own protocol, the var invokeString will contain any arguments to the app launch.
 	see http://iphonedevelopertips.com/cocoa/launching-your-own-application-via-a-custom-url-scheme.html
 	for more details -jm */
-	function onDeviceReady()
-	{
+	function onDeviceReady() {
         if (!window.localNotification) {
             alert("Could not find localNotification");
         }
-        
-        // If handling startup notification is required, use this method.
-        window.localNotification.launch(startApp, startAppDueToNotification);
 	}
         
-    function addNotification( scheduleImmediately )
-    {
-        var msg = prompt("Please a notification message:","test");
+    function addNotification( scheduleImmediately ) {
+        var msg = prompt("Please enter a notification message:","test");
         if ( msg ) {
-            var seconds = parseInt(prompt("Please a time interval in seconds (integer):", 10));
+            var seconds = parseInt(prompt("Please enter a time interval in seconds (integer):", 10));
             if ( seconds ) {
-                var badge = parseInt(prompt("Please a badge value (integer):", 1));
+                var badge = parseInt(prompt("Please enter a badge value (integer):", 1));
                 if ( badge ) {
                     var options = {
                         "message" : msg,
@@ -144,13 +112,11 @@
         }
     }
         
-    function cancelNotification()
-    {
+    function cancelNotification() {
         window.localNotification.cancel("GAME_NOTIFICATION");
     }
     
-    function cancelAllNotifications()
-    {
+    function cancelAllNotifications() {
         window.localNotification.cancelAll();
     }
     

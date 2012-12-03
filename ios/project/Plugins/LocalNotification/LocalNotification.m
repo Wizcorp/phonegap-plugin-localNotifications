@@ -97,6 +97,12 @@ static UILocalNotification *localNotification = nil;
     // initiate empty Notification Queue
     self.notificationQueue = [[NSMutableDictionary alloc ] init];
     
+    // Register the instance to observe "WizLocalNoficationReceived" notifications
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(notificationReceived:)
+                                                 name:@"WizLocalNoficationReceived"
+                                               object:nil];
+
     // Register the instance to observe didEnterBackground notifications
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(emptyNotificationQueue:)
@@ -110,6 +116,14 @@ static UILocalNotification *localNotification = nil;
                                                object:nil];
     
     return self;
+}
+
+- (void)ready:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options {
+    if ( launchedWithNotification ) {
+        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"WizLocalNoficationReceived"
+                                                                                             object:self
+                                                                                           userInfo:localNotification.userInfo]];
+    }
 }
 
 - (void)addNotification:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options {
@@ -177,6 +191,25 @@ static UILocalNotification *localNotification = nil;
 
 }
 
+- (void)notificationReceived:(NSNotification *)notification {
+    NSString *active;
+    if ( launchedWithNotification ) {
+        active = @"false";
+        launchedWithNotification = NO;
+        [localNotification release];
+        localNotification = nil;
+    } else if ( [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive ) {
+        active = @"true";
+    } else {
+        active = @"false";
+    }
+    
+    NSString *jsString = [NSString stringWithFormat:@"cordova.fireDocumentEvent('receivedLocalNotification', \
+                          { active : %@, notificationId : \'%@\' })", active, [notification.userInfo objectForKey:@"notificationId"]];
+    NSLog(@"CALLING JAVASCRIPT METHOD: %@", jsString);
+    [self.webView stringByEvaluatingJavaScriptFromString:jsString];
+}
+
 - (void)emptyNotificationQueue:(NSNotification *)notification {
     
     LocalNotification* _localNotification = [[LocalNotification alloc] init];
@@ -233,26 +266,6 @@ static UILocalNotification *localNotification = nil;
     WizLog(@"All Notifications cancelled");
 	[[UIApplication sharedApplication] cancelAllLocalNotifications];
     
-}
-
-// Currently, JS cannot be aware of when the app is launched
-- (void)launch:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options
-{
-    // If app started due to notification, return that to the corresponding JS handler (which is actually
-    // stored as the error callback). Otherwise app started normally, so return to the JS function (which
-    // is stored as the success callback).
-    NSString *callbackId;
-    CDVPluginResult* pluginResult;
-    if ( launchedWithNotification ) {
-        callbackId = [arguments objectAtIndex:0];
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
-                                         messageAsString:[[localNotification userInfo] objectForKey:@"notificationId"]];
-        [self writeJavascript: [pluginResult toErrorCallbackString:callbackId]];
-    } else {
-        callbackId = [arguments objectAtIndex:0];
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-        [self writeJavascript: [pluginResult toSuccessCallbackString:callbackId]];
-    }
 }
 
 - (void)getApplicationBadge:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options

@@ -5,7 +5,7 @@
 
 phonegap-plugin-localNotifications<br />
 version : 1.9<br />
-last update : 11/02/2012<br />
+last update : 03/12/2012<br />
 
 
 # CHANGELOG: 
@@ -59,84 +59,38 @@ Value : LocalNotification<br />
 \<script type="text/javascript" charset="utf-8" src="phonegap/plugin/localNotification/localNotification.js"\>\</script\><br />
 (assuming your index.html is setup like tree above)
 
-3.1) For observing and responding to notifications in JS, add code to your AppDelegate.m and your index.html
+3) For observing and responding to notifications in JS, add code to your AppDelegate.m and your index.html
 
 AppDelegate.m
 <pre><code>
 // this happens when we are running and receive a local notification
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
 {
-	// calls into javascript global function 'handleReceivedLocalNotification'
     NSDictionary *userInfo = [notification userInfo];
     
-    NSString *active;
-    if ( [application applicationState] == UIApplicationStateActive ) {
-        active = @"true";
-    } else {
-        active = @"false";        
-    }
-    
-    NSString* jsString = [NSString stringWithFormat:@"handleReceivedLocalNotification(\"%@\", %@);", [userInfo objectForKey:@"notificationId"], active];
-    [self.viewController.webView stringByEvaluatingJavaScriptFromString:jsString];
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"WizLocalNoficationReceived"
+                                                                                         object:self
+                                                                                       userInfo:userInfo]];
 }
 </pre></code>
 
 index.html
 <pre><code>
-    function decrementBadgeValue(badge)
-    {
-        if ( badge > 0 ) {
-            badge = badge - 1;
-        }
-        window.localNotification.setApplicationBadge(badge);
-    }
-        
-    function handleReceivedLocalNotification(notificationId, active)
-    {
-        // Update the badge value.
-        window.localNotification.getApplicationBadge(decrementBadgeValue);
-        
-        var message = "Received local notificationId: " + JSON.stringify(notificationId);
-        console.log( message );
-        if ( active ) {
-			// Your code to handle notification (app was running in foreground).
-            console.log("Application was ACTIVE");
-        } else {
-			// Your code to handle notification (app was running in background).
-            console.log("Application was NOT ACTIVE");
-        }
-    }
-</pre></code>
-
-3.2) For observing and responding to notifications in JS, when the app is
-     launched due to a local notification some special code is required.
-     Note: This code addresses the case where the app was *NOT* running in the
-     background but the app was launched in response to the user responding to a
-	 local notification.  For the case where the app was already running, see
-     the example code in 3.1).
-
-index.html
-<pre><code>
-    function startApp()
-    {
-        // Do something normal here.
-        alert("App started normally.");
-    }
-        
-    function startAppDueToNotification( notificationId )
-    {
-        // Do something special here using the notificationId.
-        alert("App started due to notification: " + JSON.stringify(notificationId));
-    }
-
-	function onDeviceReady()
-	{
-        if (!window.localNotification) {
-            alert("Could not find localNotification");
-        }
-        
-        window.localNotification.launch(startApp, startAppDueToNotification);
+	function onBodyLoad() {
+		document.addEventListener("receivedLocalNotification", onReceivedLocalNotification, false);
 	}
+
+    function onReceivedLocalNotification(event) {
+        var activeMessage;
+        if ( event.active === true ) {
+            activeMessage = ' while app was active';
+        } else {
+            activeMessage = ' while app was inactive';
+        }
+        var message = "Received local notificationId: " + event.notificationId + activeMessage;
+        console.log(message);
+        navigator.notification.alert(message);
+    }
 </pre></code>
 
 4 ) Follow example code below.
