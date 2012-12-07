@@ -24,7 +24,6 @@
 		F67EC40E163FD48F0027299C /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F67EC40D163FD48F0027299C /* CoreMedia.framework */; };
 		F67EC414163FD48F0027299C /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F67EC412163FD48F0027299C /* InfoPlist.strings */; };
 		F67EC416163FD48F0027299C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F67EC415163FD48F0027299C /* main.m */; };
-		F67EC419163FD48F0027299C /* Cordova.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F67EC418163FD48F0027299C /* Cordova.framework */; };
 		F67EC41E163FD48F0027299C /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = F67EC41C163FD48F0027299C /* Localizable.strings */; };
 		F67EC422163FD48F0027299C /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = F67EC420163FD48F0027299C /* Localizable.strings */; };
 		F67EC426163FD48F0027299C /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = F67EC424163FD48F0027299C /* Localizable.strings */; };
@@ -39,6 +38,7 @@
 		F67EC43E163FD4900027299C /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F67EC43D163FD4900027299C /* AppDelegate.m */; };
 		F67EC441163FD4900027299C /* MainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F67EC440163FD4900027299C /* MainViewController.m */; };
 		F67EC443163FD4900027299C /* MainViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F67EC442163FD4900027299C /* MainViewController.xib */; };
+		F6DD63451671BF2C00E34468 /* Cordova.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F6DD63441671BF2C00E34468 /* Cordova.framework */; };
 		F6F17B7D1643689A00B8AE4C /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F6F17B7C1643689A00B8AE4C /* Default-568h@2x.png */; };
 /* End PBXBuildFile section */
 
@@ -65,7 +65,6 @@
 		F67EC413163FD48F0027299C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		F67EC415163FD48F0027299C /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		F67EC417163FD48F0027299C /* exampleLocalNotifications-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "exampleLocalNotifications-Prefix.pch"; sourceTree = "<group>"; };
-		F67EC418163FD48F0027299C /* Cordova.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cordova.framework; path = /Users/Shared/Cordova/Frameworks/Cordova.framework; sourceTree = "<absolute>"; };
 		F67EC41D163FD48F0027299C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = Resources/en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F67EC421163FD48F0027299C /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = Resources/es.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F67EC425163FD48F0027299C /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = Resources/de.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -84,6 +83,7 @@
 		F67EC442163FD4900027299C /* MainViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = MainViewController.xib; path = Classes/MainViewController.xib; sourceTree = "<group>"; };
 		F67EC445163FD4900027299C /* README */ = {isa = PBXFileReference; lastKnownFileType = text; name = README; path = Plugins/README; sourceTree = "<group>"; };
 		F67EC446163FD4900027299C /* verify.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = verify.sh; sourceTree = "<group>"; };
+		F6DD63441671BF2C00E34468 /* Cordova.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cordova.framework; path = Frameworks/Cordova.framework; sourceTree = "<group>"; };
 		F6F17B7C1643689A00B8AE4C /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "Resources/splash/Default-568h@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -92,6 +92,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F6DD63451671BF2C00E34468 /* Cordova.framework in Frameworks */,
 				F67EC3F6163FD48F0027299C /* Foundation.framework in Frameworks */,
 				F67EC3F8163FD48F0027299C /* UIKit.framework in Frameworks */,
 				F67EC3FA163FD48F0027299C /* CoreGraphics.framework in Frameworks */,
@@ -105,7 +106,6 @@
 				F67EC40A163FD48F0027299C /* SystemConfiguration.framework in Frameworks */,
 				F67EC40C163FD48F0027299C /* MobileCoreServices.framework in Frameworks */,
 				F67EC40E163FD48F0027299C /* CoreMedia.framework in Frameworks */,
-				F67EC419163FD48F0027299C /* Cordova.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -151,6 +151,7 @@
 		F67EC3F4163FD48F0027299C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F6DD63441671BF2C00E34468 /* Cordova.framework */,
 				F67EC3F5163FD48F0027299C /* Foundation.framework */,
 				F67EC3F7163FD48F0027299C /* UIKit.framework */,
 				F67EC3F9163FD48F0027299C /* CoreGraphics.framework */,
@@ -171,7 +172,6 @@
 		F67EC40F163FD48F0027299C /* exampleLocalNotifications */ = {
 			isa = PBXGroup;
 			children = (
-				F67EC418163FD48F0027299C /* Cordova.framework */,
 				F67EC41A163FD48F0027299C /* Resources */,
 				F67EC43B163FD4900027299C /* Classes */,
 				F67EC444163FD4900027299C /* Plugins */,
@@ -516,7 +516,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				COPY_PHASE_STRIP = NO;
-				FRAMEWORK_SEARCH_PATHS = /Users/Shared/Cordova/Frameworks;
+				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/Frameworks\"";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "exampleLocalNotifications/exampleLocalNotifications-Prefix.pch";
@@ -546,7 +546,7 @@
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				FRAMEWORK_SEARCH_PATHS = /Users/Shared/Cordova/Frameworks;
+				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/Frameworks\"";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "exampleLocalNotifications/exampleLocalNotifications-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
