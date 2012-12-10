@@ -31,6 +31,8 @@
 - (void)cancelNotification:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options;
 - (void)cancelAllNotifications:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options;
 - (void)queueNotification:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options;
-+ (void)emptyNotificationQueue;
+
+- (void)getApplicationBadge:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options;
+- (void)setApplicationBadge:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options;
 
 @end

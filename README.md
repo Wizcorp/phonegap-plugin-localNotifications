@@ -4,13 +4,13 @@
 # PLUGIN: 
 
 phonegap-plugin-localNotifications<br />
-version : 1.7<br />
-last update : 10/05/2012<br />
+version : 1.9<br />
+last update : 03/12/2012<br />
 
 
 # CHANGELOG: 
 <br />
-- Updated for cordova 1.7 (iOS only)
+- Updated for cordova 1.9 (iOS only)
 
 
 # DESCRIPTION :
@@ -59,31 +59,39 @@ Value : LocalNotification<br />
 \<script type="text/javascript" charset="utf-8" src="phonegap/plugin/localNotification/localNotification.js"\>\</script\><br />
 (assuming your index.html is setup like tree above)
 
-3.5) For sending all your queued notifications when app is killed or going to background add this code to your AppDelegate.m
+3) For observing and responding to notifications in JS, add code to your AppDelegate.m and your index.html
 
+AppDelegate.m
 <pre><code>
-#import "LocalNotification.h"
-
-
-- (void)applicationWillResignActive:(UIApplication *)application
+// this happens when we are running and receive a local notification
+- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
 {
-	// apply any queued notifications
-    [LocalNotification emptyNotificationQueue];
-}
-
-- (void)applicationWillResignActive:(UIApplication *)application
-{
-	// apply any queued notifications
-    [LocalNotification emptyNotificationQueue];
-}
-
-- (void)applicationDidEnterBackground:(UIApplication *)application
-{
-	// apply any queued notifications
-    [LocalNotification emptyNotificationQueue];
+    NSDictionary *userInfo = [notification userInfo];
+    
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"WizLocalNoficationReceived"
+                                                                                         object:self
+                                                                                       userInfo:userInfo]];
 }
 </pre></code>
 
+index.html
+<pre><code>
+	function onBodyLoad() {
+		document.addEventListener("receivedLocalNotification", onReceivedLocalNotification, false);
+	}
+
+    function onReceivedLocalNotification(event) {
+        var activeMessage;
+        if ( event.active === true ) {
+            activeMessage = ' while app was active';
+        } else {
+            activeMessage = ' while app was inactive';
+        }
+        var message = "Received local notificationId: " + event.notificationId + activeMessage;
+        console.log(message);
+        navigator.notification.alert(message);
+    }
+</pre></code>
 
 4 ) Follow example code below.
 
@@ -140,3 +148,16 @@ localNotification.cancel(Int id);
 
 Cancel all notifications<br />
 localNotification.cancelAll(); 
+<br />
+
+Set application badge value <br />
+localNotification.setApplicationBadge(Int value); 
+<br />
+
+Get the application badge value<br />
+localNotification.getApplicationBadge(getSuccesFunction); 
+<br />
+
+Handle application launch due to notification<br />
+localNotification.launch(standardLaunchFunction, launchDueToNotificationFunction); 
+<br />

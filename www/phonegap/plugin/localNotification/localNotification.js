@@ -6,6 +6,12 @@
  *
  */
 
+if (window.cordova) {
+    window.document.addEventListener("deviceready", function () {
+        cordova.exec(null, null, "LocalNotification", "ready", []);
+    }, false);
+}
+
 var localNotification = {
 
 	add : function(id, options) {
@@ -24,8 +30,15 @@ var localNotification = {
     queue : function(id, options) {
         
 		return cordova.exec(null, null, "LocalNotification", "queueNotification", [id, options]);
-	}
-    
+	},
+
+    getApplicationBadge : function(s) {
+        return cordova.exec(s, null, "LocalNotification", "getApplicationBadge", []);
+    },
+        
+    setApplicationBadge : function(intValue, s) {
+        return cordova.exec(s, null, "LocalNotification", "setApplicationBadge", [intValue]);
+    }
 
 }
 
