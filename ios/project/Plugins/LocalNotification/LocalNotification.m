@@ -97,10 +97,10 @@ static UILocalNotification *localNotification = nil;
     // initiate empty Notification Queue
     self.notificationQueue = [[NSMutableDictionary alloc ] init];
     
-    // Register the instance to observe "WizLocalNoficationReceived" notifications
+    // Register the instance to observe CDVLocalNotification notifications
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(notificationReceived:)
-                                                 name:@"WizLocalNoficationReceived"
+                                                 name:CDVLocalNotification
                                                object:nil];
 
     // Register the instance to observe didEnterBackground notifications
@@ -118,24 +118,25 @@ static UILocalNotification *localNotification = nil;
     return self;
 }
 
-- (void)ready:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options {
+- (void)ready:(CDVInvokedUrlCommand*)command {
     if ( launchedWithNotification ) {
-        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"WizLocalNoficationReceived"
-                                                                                             object:self
-                                                                                           userInfo:localNotification.userInfo]];
+        NSNotification *notification = [NSNotification notificationWithName:CDVLocalNotification
+                                                                     object:localNotification];
+        [self notificationReceived:notification];
     }
 }
 
-- (void)addNotification:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options {
+- (void)addNotification:(CDVInvokedUrlCommand*)command {
 	
     // NO callbacks
     
+    NSDictionary *options = [command.arguments objectAtIndex:1];
     
     int seconds                 = [[options objectForKey:@"seconds"] intValue];
 	NSString *msg               = [options objectForKey:@"message"];
 	// NSString *action            = [options objectForKey:@"action"];
     NSString *action            = @"View";
-	NSString *notificationId    = [NSString stringWithFormat:@"%@", [arguments objectAtIndex:1]];
+	NSString *notificationId    = [NSString stringWithFormat:@"%@", [command.arguments objectAtIndex:0]];
 	NSInteger badge             = [[options objectForKey:@"badge"] intValue];
 	bool hasAction              = TRUE;
 	
@@ -182,10 +183,11 @@ static UILocalNotification *localNotification = nil;
 }
 
 
-- (void)queueNotification:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options {
+- (void)queueNotification:(CDVInvokedUrlCommand*)command {
     WizLog(@"[queueNotification] ------- adding notification to queue ");
+    NSDictionary *options = [command.arguments objectAtIndex:1];
     // store notifications in notificationQueue dictionary
-    NSString *notificationId    = [NSString stringWithFormat:@"%@", [arguments objectAtIndex:1]];
+    NSString *notificationId    = [NSString stringWithFormat:@"%@", [command.arguments objectAtIndex:0]];
     [self.notificationQueue setObject:options forKey:notificationId];
     
 
@@ -205,7 +207,7 @@ static UILocalNotification *localNotification = nil;
     }
     
     NSString *jsString = [NSString stringWithFormat:@"cordova.fireDocumentEvent('receivedLocalNotification', \
-                          { active : %@, notificationId : \'%@\' })", active, [notification.userInfo objectForKey:@"notificationId"]];
+                          { active : %@, notificationId : \'%@\' })", active, [[notification.object userInfo] objectForKey:@"notificationId"]];
     NSLog(@"CALLING JAVASCRIPT METHOD: %@", jsString);
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
 }
@@ -217,13 +219,13 @@ static UILocalNotification *localNotification = nil;
     // Add all notifications from the notificationQueue dictionary and empty it
     for (NSString* key in self.notificationQueue) {
         
-        // grab values from notification queue, remember to add 'padding' as addNotification method reads Id from array[1]
-        NSMutableArray* notificationArray = [[NSMutableArray alloc] initWithObjects:@"padding", key, nil];
         NSMutableDictionary* notificationDict = [[NSMutableDictionary alloc] initWithDictionary:[self.notificationQueue objectForKey:key]];
-        WizLog(@"Notification in queue adding : %@ with options : %@", notificationArray, notificationDict);
+        NSArray* notificationArray = [[NSArray alloc] initWithObjects:key, notificationDict, nil];
+        WizLog(@"Notification in queue adding : %@", notificationArray);
 
-        
-        [_localNotification addNotification:notificationArray withDict:notificationDict];
+        CDVInvokedUrlCommand *cmd = [[CDVInvokedUrlCommand alloc] initWithArguments:notificationArray callbackId:@"" className:@"LocalNotification" methodName:@"addNotification"];
+        [_localNotification addNotification:cmd];
+        [cmd release];
         [notificationArray release];
         [notificationDict release];
         
@@ -238,10 +240,10 @@ static UILocalNotification *localNotification = nil;
     
 }
 
-- (void)cancelNotification:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options {
+- (void)cancelNotification:(CDVInvokedUrlCommand*)command {
 	
-    if ([arguments count] >1) {
-        NSString *notificationId    = [NSString stringWithFormat:@"%@", [arguments objectAtIndex:1]];
+    if ([command.arguments count] >0) {
+        NSString *notificationId    = [NSString stringWithFormat:@"%@", [command.arguments objectAtIndex:0]];
         NSArray *notifications      = [[UIApplication sharedApplication] scheduledLocalNotifications];
         
         for (UILocalNotification *notification in notifications) {
@@ -261,33 +263,30 @@ static UILocalNotification *localNotification = nil;
     
 }
 
-- (void)cancelAllNotifications:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options {
+- (void)cancelAllNotifications:(CDVInvokedUrlCommand*)command {
 	
     WizLog(@"All Notifications cancelled");
 	[[UIApplication sharedApplication] cancelAllLocalNotifications];
     
 }
 
-- (void)getApplicationBadge:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options
+- (void)getApplicationBadge:(CDVInvokedUrlCommand*)command
 {
-    NSString *callbackId = [arguments objectAtIndex:0];
-
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
                                                          messageAsInt:[UIApplication sharedApplication].applicationIconBadgeNumber];
     
-    [self writeJavascript: [pluginResult toSuccessCallbackString:callbackId]];
+    [self writeJavascript: [pluginResult toSuccessCallbackString:command.callbackId]];
 }
 
-- (void)setApplicationBadge:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options
+- (void)setApplicationBadge:(CDVInvokedUrlCommand*)command
 {
-    NSNumber *value = [arguments objectAtIndex:1];
+    NSNumber *value = [command.arguments objectAtIndex:0];
     [UIApplication sharedApplication].applicationIconBadgeNumber = [value integerValue];
 
     // Invoke callback method if it was specified.
-    NSString *callbackId = [arguments objectAtIndex:0];
-    if ( ![callbackId isEqualToString:@"INVALID"] ) {
+    if ( ![command.callbackId isEqualToString:@"INVALID"] ) {
         CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-        [self writeJavascript: [pluginResult toSuccessCallbackString:callbackId]];
+        [self writeJavascript: [pluginResult toSuccessCallbackString:command.callbackId]];
     }
 }
 
