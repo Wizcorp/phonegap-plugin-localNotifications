@@ -4,12 +4,13 @@
 # PLUGIN: 
 
 phonegap-plugin-localNotifications<br />
-version : 1.9<br />
-last update : 03/12/2012<br />
+version : 2.3<br />
+last update : 25/01/2013<br />
 
 
 # CHANGELOG: 
 <br />
+- Updated for cordova 2.3 (iOS only)
 - Updated for cordova 1.9 (iOS only)
 
 
@@ -59,20 +60,7 @@ Value : LocalNotification<br />
 \<script type="text/javascript" charset="utf-8" src="phonegap/plugin/localNotification/localNotification.js"\>\</script\><br />
 (assuming your index.html is setup like tree above)
 
-3) For observing and responding to notifications in JS, add code to your AppDelegate.m and your index.html
-
-AppDelegate.m
-<pre><code>
-// this happens when we are running and receive a local notification
-- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
-{
-    NSDictionary *userInfo = [notification userInfo];
-    
-    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"WizLocalNoficationReceived"
-                                                                                         object:self
-                                                                                       userInfo:userInfo]];
-}
-</pre></code>
+3) For observing and responding to notifications in JS, add code to your index.html
 
 index.html
 <pre><code>
