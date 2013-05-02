@@ -4,12 +4,13 @@
 # PLUGIN: 
 
 phonegap-plugin-localNotifications<br />
-version : 2.6<br />
+version : 2.7<br />
 last update : 02/05/2013<br />
 
 
 # CHANGELOG: 
 <br />
+- Updated for cordova 2.7 (iOS only)
 - Updated for cordova 2.6 (iOS only)
 - Updated for cordova 2.5 (iOS only)
 - Updated for cordova 2.4 (iOS only)
