@@ -38,16 +38,15 @@ public class LocalNotification extends CordovaPlugin {
 		/*
 		 * Determine which action of the plugin needs to be invoked
 		 */
-		int alarmId;
+        String alarmId;
 		try {
-			alarmId = Integer.parseInt(args.getString(0));
+            alarmId = args.getString(0);
 		} catch (Exception e) {
-			Log.d("AlarmReceiver", "Unable to process alarm with string id: " + args.getString(0));
+			Log.d(TAG, "Unable to process alarm with string id: " + args.getString(0));
 			callbackContext.error("Cannot use string for notification id.");
 			return true;
 		}
 
-		alarmId = 1;
 		if (action.equalsIgnoreCase("addNotification")) {
 
 			try {
@@ -171,7 +170,7 @@ public class LocalNotification extends CordovaPlugin {
      * 
      * @return true when successful, otherwise false
      */
-    private boolean persistAlarm(int alarmId, JSONArray optionsArr) {
+    private boolean persistAlarm(String alarmId, JSONArray optionsArr) {
 		final Editor alarmSettingsEditor = cordova.getActivity().getApplicationContext().getSharedPreferences(TAG, Context.MODE_PRIVATE).edit();
 	
 		alarmSettingsEditor.putString("" + alarmId, optionsArr.toString());
