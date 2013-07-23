@@ -12,4 +12,7 @@ example/android/bin/*
 example/android/gen/*
 example/android/.classpath
 example/android/local.properties
-
+*.iml
+*.idea
+example/android/build/*
+example/android/out/*
