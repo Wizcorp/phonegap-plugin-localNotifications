@@ -155,9 +155,9 @@ static UILocalNotification *localNotification = nil;
 	notif.alertAction = action;
 	notif.soundName = UILocalNotificationDefaultSoundName;
 	notif.applicationIconBadgeNumber = badge;
-	
-	NSDictionary *userDict = [NSDictionary dictionaryWithObject:notificationId 
-														 forKey:@"notificationId"];
+	// allow for alert message and notificationId to be passed during callback
+    	NSDictionary *userDict = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:notificationId,notif.alertBody,nil]
+                                                      forKeys:[NSArray arrayWithObjects:@"notificationId",@"msg",nil]];
 	notif.userInfo = userDict;
 	
     
@@ -207,7 +207,7 @@ static UILocalNotification *localNotification = nil;
     }
     
     NSString *jsString = [NSString stringWithFormat:@"cordova.fireDocumentEvent('receivedLocalNotification', \
-                          { active : %@, notificationId : \'%@\' })", active, [[notification.object userInfo] objectForKey:@"notificationId"]];
+                          { active : %@, notificationId : \'%@\', msg:  \'%@\' })", active, [[notification.object userInfo] objectForKey:@"notificationId"],[[notification.object userInfo] objectForKey:@"msg"]];
     NSLog(@"CALLING JAVASCRIPT METHOD: %@", jsString);
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
 }
