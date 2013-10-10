@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    id="jp.wizcorp.phonegap.plugin.localNotificationPlugin"
+    version="1.0.0">
+
+    <name>Local Notification Plugin</name>
+    
+    <description>This plugin allows you to add, queue, cancel by id and cancel all local notifications.</description>
+    
+    <author>Ally Ogilvie - aogilvie@wizcorp.jp</author>
+    
+    <keywords>local, notification, notifications</keywords>
+	
+	<engines>
+	    <engine name="cordova" version=">=2.6.0" />
+	</engines>
+
+    <license>MIT</license>
+
+    <js-module src="www/phonegap/plugin/localNotification/localNotification.js" name="localNotificationPlugin" target="phonegap/plugin/localNotification/localNotification.js">
+        <clobbers target="window.localNotification" />
+    </js-module>
+    
+    <!-- ios -->
+    <platform name="ios">
+
+        <config-file target="config.xml" parent="/*">
+        	<feature name="LocalNotification">
+                <param name="ios-package" value="LocalNotification"/>
+                <param name="onload" value="true" />
+            </feature>
+        	<plugin name="LocalNotification" value="LocalNotification"/>
+        </config-file>
+               
+        <!-- Plugin files -->
+        <header-file src="ios/project/Plugins/LocalNotification/LocalNotification.h" />
+        <source-file src="ios/project/Plugins/LocalNotification/LocalNotification.m" compiler-flags="-fno-objc-arc" />
+
+        <!-- Custom Logger -->
+        <header-file src="ios/project/Plugins/LocalNotification/WizDebugLog.h"
+        	target-dir="WizCanvas" />
+
+    </platform>
+    
+    <license>MIT</license>
+
+</plugin>
