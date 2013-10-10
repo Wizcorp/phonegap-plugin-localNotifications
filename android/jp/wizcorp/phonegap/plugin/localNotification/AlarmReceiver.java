@@ -1,7 +1,5 @@
 package jp.wizcorp.phonegap.plugin.localNotification;
 
-import org.apache.cordova.example.R;
-
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -51,7 +49,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
 		// Construct the notification and notificationManager objects
 		final NotificationManager notificationMgr = (NotificationManager) systemService;
-		final Notification notification = new Notification(R.drawable.ic_launcher, tickerText,
+		final Notification notification = new Notification(android.R.drawable.star_big_on, tickerText,
 				System.currentTimeMillis());
 		final PendingIntent contentIntent = PendingIntent.getActivity(context, 0, new Intent(context, LocalNotification.class), 0);
 		notification.defaults |= Notification.DEFAULT_SOUND;

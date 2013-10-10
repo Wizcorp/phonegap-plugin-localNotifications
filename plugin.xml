@@ -13,7 +13,7 @@
     <keywords>local, notification, notifications</keywords>
 	
 	<engines>
-	    <engine name="cordova" version=">=2.6.0" />
+	    <engine name="cordova" version=">=3.0.0" />
 	</engines>
 
     <license>MIT</license>
@@ -21,6 +21,40 @@
     <js-module src="www/phonegap/plugin/localNotification/localNotification.js" name="localNotificationPlugin" target="phonegap/plugin/localNotification/localNotification.js">
         <clobbers target="window.localNotification" />
     </js-module>
+
+    <!-- android -->
+    <platform name="android">
+
+    <config-file target="res/xml/config.xml" parent="/*">
+		<feature name="LocalNotification" >
+			<param name="android-package" value="jp.wizcorp.phonegap.plugin.localNotification.LocalNotification"/>
+		</feature>
+    </config-file>
+    
+    <config-file target="AndroidManifest.xml" parent="/manifest">
+    	<uses-permission android:name="android.permission.VIBRATE" />
+    </config-file>   
+    
+    <config-file target="AndroidManifest.xml" parent="/manifest/application">
+    	<receiver android:name="jp.wizcorp.phonegap.plugin.localNotification.AlarmReceiver" ></receiver>
+    	<receiver android:name="jp.wizcorp.phonegap.plugin.localNotification.AlarmRestoreOnBoot" >
+	    	<intent-filter>
+	        	<action android:name="android.intent.action.BOOT_COMPLETED" />
+        	</intent-filter>
+    	</receiver>
+    </config-file>
+
+    <source-file src="android/jp/wizcorp/phonegap/plugin/localNotification/LocalNotification.java" 
+            target-dir="src/jp/wizcorp/phonegap/plugin/localNotification"/>
+    <source-file src="android/jp/wizcorp/phonegap/plugin/localNotification/AlarmHelper.java" 
+            target-dir="src/jp/wizcorp/phonegap/plugin/localNotification"/> 
+            <source-file src="android/jp/wizcorp/phonegap/plugin/localNotification/AlarmOptions.java" 
+            target-dir="src/jp/wizcorp/phonegap/plugin/localNotification"/> 
+            <source-file src="android/jp/wizcorp/phonegap/plugin/localNotification/AlarmReceiver.java" 
+            target-dir="src/jp/wizcorp/phonegap/plugin/localNotification"/> 
+            <source-file src="android/jp/wizcorp/phonegap/plugin/localNotification/AlarmRestoreOnBoot.java" 
+            target-dir="src/jp/wizcorp/phonegap/plugin/localNotification"/> 
+    </platform>
     
     <!-- ios -->
     <platform name="ios">
