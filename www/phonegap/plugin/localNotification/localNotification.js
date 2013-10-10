@@ -1,75 +1,47 @@
 /**
  * 
  * @author Ally Ogilvie
- * @copyright WizCorp Inc. [ Incorporated Wizards ] 2011
+ * @copyright Wizcorp Inc. [ Incorporated Wizards ] 2013
  * @file localNotification.js for PhoneGap
  *
  */
 
+var exec = require("cordova/exec");
+
 if (window.cordova) {
     window.document.addEventListener("deviceready", function () {
-        cordova.exec(null, null, "LocalNotification", "ready", []);
+        exec(null, null, "LocalNotification", "ready", []);
     }, false);
 }
 
-var localNotification = {
+var LocalNotification = function () {};
 
-	add : function(id, options) {
 
-		return cordova.exec(null, null, "LocalNotification", "addNotification", [id, options]);
-	},
+LocalNotification.prototype.add = function (id, options) {
+		exec(null, null, "LocalNotification", "addNotification", [id, options]);
+	};
 
-	cancel : function(id) {
-		return cordova.exec(null, null, "LocalNotification", "cancelNotification", [id]);
-	},
+LocalNotification.prototype.cancel = function (id) {
+		exec(null, null, "LocalNotification", "cancelNotification", [id]);
+	};
 	
-	cancelAll : function() {
-        return cordova.exec(null, null,"LocalNotification", "cancelAllNotifications", []);
-    },
+LocalNotification.prototype.cancelAll = function () {
+        exec(null, null,"LocalNotification", "cancelAllNotifications", []);
+    };
     
-    queue : function(id, options) {
+LocalNotification.prototype.queue = function (id, options) {
         
-		return cordova.exec(null, null, "LocalNotification", "queueNotification", [id, options]);
-	},
+		exec(null, null, "LocalNotification", "queueNotification", [id, options]);
+	};
 
-    getApplicationBadge : function(s) {
-        return cordova.exec(s, null, "LocalNotification", "getApplicationBadge", []);
-    },
+LocalNotification.prototype.getApplicationBadge = function (s) {
+        exec(s, null, "LocalNotification", "getApplicationBadge", []);
+    };
         
-    setApplicationBadge : function(intValue, s) {
-        return cordova.exec(s, null, "LocalNotification", "setApplicationBadge", [intValue]);
-    }
+LocalNotification.prototype.setApplicationBadge = function (intValue, s) {
+        exec(s, null, "LocalNotification", "setApplicationBadge", [intValue]);
+    };
 
-}
-
-
-
-/*
-*
-*   Example functions
-*
-
-function sendNotif() {
-    myOptions = {
-        seconds: 30,
-        message: 'chaaaarrrliieeeee',
-        badge: 1
-    }
-    localNotification.add( "0", myOptions );
-    
-};
-
-function cancelLastNotif() {
-    localNotification.cancel( "0" );
-    
-};
-
-function cancelAllNotif() {
-    
-    localNotification.cancelAll();
-    
-};
-
-
-
-*/
+// instantiate wizCanvas (passing "mainView" which is Cordova's window)
+window.localNotification = new LocalNotification();
+module.exports = localNotification;
