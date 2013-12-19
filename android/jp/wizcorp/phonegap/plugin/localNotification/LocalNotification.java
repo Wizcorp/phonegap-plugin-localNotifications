@@ -2,6 +2,7 @@ package jp.wizcorp.phonegap.plugin.localNotification;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
+import org.apache.cordova.CordovaWebView;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -22,6 +23,7 @@ import android.util.Log;
 public class LocalNotification extends CordovaPlugin {
 
     public static final String TAG = "LocalNotification";
+    public static CordovaWebView _webview;
 
     /**
      * Delegate object that does the actual alarm registration. Is reused by the
@@ -30,11 +32,17 @@ public class LocalNotification extends CordovaPlugin {
     private AlarmHelper alarm = null;
 
     @Override
+    public void initialize(org.apache.cordova.CordovaInterface cordova, org.apache.cordova.CordovaWebView webView) {
+        // Keep a pointer to the WebView so we can emit JS Event when getting a notification
+        _webview = webView;
+        super.initialize(cordova, webView);
+    }
+
+    @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
-	    // public PluginResult execute(String action, JSONArray optionsArr, String callBackId) {
-		alarm = new AlarmHelper(cordova.getActivity().getApplicationContext());
-		Log.d(TAG, "Plugin execute called with action: " + action);
-	
+        Log.d(TAG, "Plugin execute called with action: " + action);
+        alarm = new AlarmHelper(cordova.getActivity().getApplicationContext());
+
 		/*
 		 * Determine which action of the plugin needs to be invoked
 		 */
@@ -81,8 +89,6 @@ public class LocalNotification extends CordovaPlugin {
      * 
      * @param callbackContext
      * 			  Callback context of the request from Cordova
-     * @param repeatDaily
-     *            If true, the alarm interval will be set to one day.
      * @param alarmTitle
      *            The title of the alarm as shown in the Android notification
      *            panel
@@ -156,6 +162,10 @@ public class LocalNotification extends CordovaPlugin {
 			callbackContext.error("Cancel all notifications failed.");
 		    return false;
 		}
+    }
+
+    public static CordovaWebView getCordovaWebView() {
+        return _webview;
     }
 
     /**

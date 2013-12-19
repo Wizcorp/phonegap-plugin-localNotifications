@@ -23,39 +23,39 @@ public class AlarmRestoreOnBoot extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-	final String pluginName = LocalNotification.TAG;
-	
-	// Obtain alarm details form Shared Preferences
-	final SharedPreferences alarmSettings = context.getSharedPreferences(pluginName, Context.MODE_PRIVATE);
-	final Map<String, ?> allAlarms = alarmSettings.getAll();
-	final Set<String> alarmIds = allAlarms.keySet();
+        final String pluginName = LocalNotification.TAG;
 
-	/*
-	 * For each alarm, parse its alarm options and register is again with
-	 * the Alarm Manager
-	 */
-	for (String alarmId : alarmIds) {
-	    try {
-		final AlarmHelper alarm = new AlarmHelper(context);
-		final JSONArray alarmDetails = new JSONArray(alarmSettings.getString(alarmId, ""));
-		final AlarmOptions options = new AlarmOptions();
+        // Obtain alarm details form Shared Preferences
+        final SharedPreferences alarmSettings = context.getSharedPreferences(pluginName, Context.MODE_PRIVATE);
+        final Map<String, ?> allAlarms = alarmSettings.getAll();
+        final Set<String> alarmIds = allAlarms.keySet();
 
-		options.parseOptions(alarmDetails);
+        /*
+         * For each alarm, parse its alarm options and register is again with
+         * the Alarm Manager
+         */
+        for (String alarmId : alarmIds) {
+            try {
+                final AlarmHelper alarm = new AlarmHelper(context);
+                final JSONArray alarmDetails = new JSONArray(alarmSettings.getString(alarmId, ""));
+                final AlarmOptions options = new AlarmOptions();
 
-		final String title = options.getAlarmTitle();
-		final String subTitle = options.getAlarmSubTitle();
-		final String ticker = options.getAlarmTicker();
-		final String id = options.getNotificationId();
-		final Long cal = options.getCal().getTimeInMillis();
+                options.parseOptions(alarmDetails);
 
-		alarm.addAlarm(title, subTitle, ticker, id, cal);
+                final String title = options.getAlarmTitle();
+                final String subTitle = options.getAlarmSubTitle();
+                final String ticker = options.getAlarmTicker();
+                final String id = options.getNotificationId();
+                final Long cal = options.getCal().getTimeInMillis();
 
-	    } catch (JSONException e) {
-		Log.d(pluginName,
-			"AlarmRestoreOnBoot: Error while restoring alarm details after reboot: " + e.toString());
-	    }
+                alarm.addAlarm(title, subTitle, ticker, id, cal);
 
-	    Log.d(pluginName, "AlarmRestoreOnBoot: Successfully restored alarms upon reboot");
-	}
+            } catch (JSONException e) {
+                Log.d(pluginName,
+                    "AlarmRestoreOnBoot: Error while restoring alarm details after reboot: " + e.toString());
+            }
+
+            Log.d(pluginName, "AlarmRestoreOnBoot: Successfully restored alarms upon reboot");
+        }
     }
 }

@@ -44,7 +44,8 @@ public class AlarmReceiver extends BroadcastReceiver {
 		try {
 			notificationId = Integer.parseInt(bundle.getString(NOTIFICATION_ID));
 		} catch (Exception e) {
-			Log.d("AlarmReceiver", "Unable to process alarm with id: " + bundle.getString(NOTIFICATION_ID));
+			Log.e("AlarmReceiver", "Unable to process alarm with id: " + bundle.getString(NOTIFICATION_ID));
+            Log.e("LocalNotification", "Unable to process alarm with id: " + bundle.getString(NOTIFICATION_ID));
 		}
 
 		// Construct the notification and notificationManager objects
@@ -64,5 +65,9 @@ public class AlarmReceiver extends BroadcastReceiver {
 		 */
 		notificationMgr.notify(notificationId, notification);
 
+        // Notify JavaScript
+        // NOTE: It is very difficult to know if our app is in the background or not, we will send active: true
+        // the most important thing is to inform JavaScript that the event was triggered.
+        LocalNotification.getCordovaWebView().sendJavascript("cordova.fireDocumentEvent('receivedLocalNotification', { active : true, notificationId : " + notificationId + " })");
 	}
 }
