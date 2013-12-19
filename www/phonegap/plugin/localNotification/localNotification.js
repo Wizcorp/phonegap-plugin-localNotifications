@@ -42,6 +42,6 @@ LocalNotification.prototype.setApplicationBadge = function (intValue, s) {
         exec(s, null, "LocalNotification", "setApplicationBadge", [intValue]);
     };
 
-// instantiate wizCanvas (passing "mainView" which is Cordova's window)
+// Instantiate LocalNotification
 window.localNotification = new LocalNotification();
 module.exports = localNotification;
