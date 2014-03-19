@@ -4,12 +4,14 @@ import java.util.Calendar;
 import java.util.Map;
 import java.util.Set;
 
+import android.R.dimen;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
+import android.os.*;
 
 /**
  * Helper class for the LocalNotification plugin. This class is reused by the
@@ -25,7 +27,7 @@ public class AlarmHelper {
     private Context ctx;
 
     public AlarmHelper(Context context) {
-	this.ctx = context;
+    	this.ctx = context;
     }
 
     /**
@@ -34,25 +36,19 @@ public class AlarmHelper {
      */
     public boolean addAlarm(String alarmTitle, String alarmSubTitle, String alarmTicker,
 	    String notificationId, Long seconds) {
-
-		final long triggerTime = seconds;
-		final Intent intent = new Intent(this.ctx, AlarmReceiver.class);
-		// final int hour = cal.get(Calendar.HOUR_OF_DAY);
-		// final int min = cal.get(Calendar.MINUTE);
+    	
+		long triggerTime = seconds;
+		
+		Intent intent = new Intent(this.ctx, AlarmReceiver.class)
+			.setAction(notificationId)
+			.putExtra(AlarmReceiver.TITLE, alarmTitle)
+			.putExtra(AlarmReceiver.SUBTITLE, alarmSubTitle)
+			.putExtra(AlarmReceiver.TICKER_TEXT, alarmTicker)
+			.putExtra(AlarmReceiver.NOTIFICATION_ID, notificationId);
 	
-		intent.setAction("" + notificationId);
-		intent.putExtra(AlarmReceiver.TITLE, alarmTitle);
-		intent.putExtra(AlarmReceiver.SUBTITLE, alarmSubTitle);
-		intent.putExtra(AlarmReceiver.TICKER_TEXT, alarmTicker);
-		intent.putExtra(AlarmReceiver.NOTIFICATION_ID, notificationId);
-		// intent.putExtra(AlarmReceiver.HOUR_OF_DAY, hour);
-		// intent.putExtra(AlarmReceiver.MINUTE, min);
+		PendingIntent sender = PendingIntent.getBroadcast(this.ctx, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 	
-		final PendingIntent sender = PendingIntent.getBroadcast(this.ctx, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-		/* Get the AlarmManager service */
-		final AlarmManager am = getAlarmManager();
-	
-		am.set(AlarmManager.RTC_WAKEUP, triggerTime, sender);
+		getAlarmManager().set(AlarmManager.RTC_WAKEUP, triggerTime, sender);
 	
 		return true;
     }
@@ -67,14 +63,13 @@ public class AlarmHelper {
 		 * Now we can search for such an intent using the 'getService' method
 		 * and cancel it.
 		 */
-		final Intent intent = new Intent(this.ctx, AlarmReceiver.class);
-		intent.setAction("" + notificationId);
+		Intent intent = new Intent(this.ctx, AlarmReceiver.class)
+			.setAction(notificationId);
 	
-		final PendingIntent pi = PendingIntent.getBroadcast(this.ctx, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-		final AlarmManager am = getAlarmManager();
+		PendingIntent pi = PendingIntent.getBroadcast(this.ctx, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 	
 		try {
-		    am.cancel(pi);
+			getAlarmManager().cancel(pi);
 		} catch (Exception e) {
 		    return false;
 		}
@@ -85,21 +80,17 @@ public class AlarmHelper {
      * @see LocalNotification#cancelAllNotifications()
      */
     public boolean cancelAll(SharedPreferences alarmSettings) {
-		final Map<String, ?> allAlarms = alarmSettings.getAll();
-		final Set<String> alarmIds = allAlarms.keySet();
+		Set<String> alarmIds = alarmSettings.getAll().keySet();
 	
 		for (String alarmId : alarmIds) {
 		    Log.d(LocalNotification.TAG, "Canceling notification with id: " + alarmId);
-		    String alarmInt = alarmId;
-		    cancelAlarm(alarmInt);
+		    cancelAlarm(alarmId);
 		}
 	
 		return true;
     }
 	
 	private AlarmManager getAlarmManager() {
-	    final AlarmManager am = (AlarmManager) this.ctx.getSystemService(Context.ALARM_SERVICE);
-	
-		return am;
+	    return (AlarmManager) this.ctx.getSystemService(Context.ALARM_SERVICE);
     }
 }
