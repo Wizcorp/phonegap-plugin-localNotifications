@@ -65,9 +65,9 @@ Setting up the options Object:
 ```
 var options = {
     	seconds: int,
-    	ticker: string, //Android only
-    	title: string, //Android only
-    	icon: string //Android only
+    	ticker: string, //Android only & Optional
+    	title: string, //Android only & Optional
+    	icon: string //Android only & Optional
     	message: string, 
 	badge: int
 };
