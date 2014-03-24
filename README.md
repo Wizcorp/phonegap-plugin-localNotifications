@@ -129,7 +129,7 @@ Example usage:
 ```
 localNotification.getApplicationBadge(function(badgeValue){
 	alert("Our application badge value is: " + badgeValue);
-}
+});
 ```
 
 ### `launch(func stdLaunch, func ntfLaunch)`
