@@ -23,7 +23,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 	public static final String SUBTITLE = "ALARM_SUBTITLE";
 	public static final String TICKER_TEXT = "ALARM_TICKER";
 	public static final String NOTIFICATION_ID = "NOTIFICATION_ID";
-	public static final String PICTURE = "NOTIFICATION_ID";
+	public static final String ICON = "ALARM_ICON";
 
 	/* Contains time in 24hour format 'HH:mm' e.g. '04:30' or '18:23' */
 	public static final String HOUR_OF_DAY = "HOUR_OF_DAY";
@@ -46,7 +46,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 		}
 		
 		Notification notification = new Notification.Builder(context)
-			.setSmallIcon(org.authiq.emerge.R.drawable.notification)
+			.setSmallIcon(bundle.getInt(ICON))
 			.setContentTitle(bundle.getString(TITLE))
 			.setContentText(bundle.getString(SUBTITLE))
 			.setTicker(bundle.getString(TICKER_TEXT))
