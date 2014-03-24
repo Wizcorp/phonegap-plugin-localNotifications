@@ -11,6 +11,8 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.util.Log;
 
+import java.lang.Exception;
+
 /**
  * This plugin utilizes the Android AlarmManager in combination with StatusBar
  * notifications. When a local notification is scheduled the alarm manager takes
@@ -62,16 +64,15 @@ public class LocalNotification extends CordovaPlugin {
                 } catch (Exception e){}
                 try {
                     icon = args.getJSONObject(1).getString("icon");
-                } catch (Exception e) {
-                    Log.e("LocalNotification", "Exception can occur.");
-                }
+                } catch (Exception e) {}
 
-                if(icon == null) {
-                    Log.e("LocalNotification", "Value null returned!");
-                }
 
                 if(icon != "") {
-                    iconResource = cordova.getActivity().getResources().getIdentifier(icon, "drawable", cordova.getActivity().getPackageName());
+                    try {
+                        iconResource = cordova.getActivity().getResources().getIdentifier(icon, "drawable", cordova.getActivity().getPackageName());
+                    } catch(Exception e) {
+                        Log.e(this.TAG, "The icon resource couldn't be found. Taking default icon.");
+                    }
                 }
 
 			    persistAlarm(alarmId, args);
