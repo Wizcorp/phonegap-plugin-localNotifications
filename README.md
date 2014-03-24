@@ -1,7 +1,7 @@
 # phonegap-plugin-localNotifications
 
 - PhoneGap Version : 3.0
-- last update : 01/10/2013
+- last update : 24/03/2014
 
 # Description
 
@@ -40,48 +40,103 @@ Android
 
 ## APIs
 
-### Add a notification
+### Root class
 
-	localNotification.add(Int id, JSONObject options);
+The root class for the localNotification plugin is: `localNotification` every function descibed below has been defined within the `localNotification` class.
 
-** NOTE: Adding a notification with the same id stops the notification and adds another. **
+For example the `add()` function can be called like this:
+```
+localNotification.add(103, {
+	seconds: 30,
+	message: "This is an example",
+	badge: 1});
+```
 
-	{
-    	seconds: 30, 
-    	message: "chaaaarrrliieeeee", 
-    	badge: 1 
-	}; 
+### `add(int id, JSONObject options)`
 
-### Queue a notification
+The `add()` function adds a notification to the notification area of the phone. Do note that adding a notification with the exact same notification id twice will replace the first notification.
 
-	localNotification.queue(Int id, JSONObject options);
+```
+	id: Integer which represents the notification id
+	options: A JSONObject holding the notification options
+```
 
-** NOTE: Queuing is currently iOS ONLY. **
+Setting up the options Object:
+```
+var options = {
+    	seconds: int,
+    	ticker: string, //Android only
+    	title: string, //Android only
+    	icon: string //Android only
+    	message: string, 
+	badge: int
+};
+```
 
-	{
-    	seconds: 30, 
-    	message: "chaaaarrrliieeeee", 
-    	badge: 1 
-	}; 
+The `icon` property has to reference to the name of a drawable resource in your Android project. If you leave the `title`, `ticker` or `icon` empty they will become default values.
+
+### `queue(int id, JSONObject options)`
+
+**NOTE: Queuing is currently iOS ONLY.**
+
+The `queue()` function queue's a notification to be sent to the notification area of an iDevice.
+
+```
+	id: Integer which represents the notification id.
+	options: A JSONObject holding the notification options.
+```
+
+Setting up the options Object:
+```
+	var options = {
+    		seconds: 30, 
+    		message: "chaaaarrrliieeeee", 
+    		badge: 1 
+	};
+```
 	
-### Cancel a notification
+### `cancel(int id)`
 
-	localNotification.cancel(Int id); 
+Cancels the notification the given notification id.
+
+```
+	id: The notification id.
+```
 
 
-### Cancel all notifications
+### `cancelAll()`
 
-	localNotification.cancelAll(); 
+Cancels all notifications.
 
 
-### Set application badge value
+### `setApplicationBadge(int value)`
 
-	localNotification.setApplicationBadge(Int value); 
+Sets the application badge value, for later use with the `add()` or `queue()` functions.
 
-### Get the application badge value
+```
+	value: The application badge value	
+```
 
-	localNotification.getApplicationBadge(getSuccesFunction); 
+### `getApplicationBadge(func success)`
 
-### Handle application launch due to notification
+Get the badge value. For use with the `add()` or `queue()` functions.
 
-	localNotification.launch(standardLaunchFunction, launchDueToNotificationFunction); 
+```
+	success: The success callback. It gets called when the operation executes successfully.
+```
+
+Example usage:
+```
+localNotification.getApplicationBadge(function(badgeValue){
+	alert("Our application badge value is: " + badgeValue);
+}
+```
+
+### `launch(func stdLaunch, func ntfLaunch)`
+
+Registers the function on the app launch event. When the user launches the application through a notification the event gets triggered.
+
+```
+	stdLaunch: The standard launch function.
+	ntfLaunch: the function to be used when application has been launched through a notification.
+```
