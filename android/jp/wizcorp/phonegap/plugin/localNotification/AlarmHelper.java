@@ -44,7 +44,7 @@ public class AlarmHelper {
 			.putExtra(AlarmReceiver.TITLE, alarmTitle)
 			.putExtra(AlarmReceiver.SUBTITLE, alarmSubTitle)
 			.putExtra(AlarmReceiver.TICKER_TEXT, alarmTicker)
-            .putExtra(AlarmReceiver.ICON, icon)
+            		.putExtra(AlarmReceiver.ICON, icon)
 			.putExtra(AlarmReceiver.NOTIFICATION_ID, notificationId);
 	
 		PendingIntent sender = PendingIntent.getBroadcast(this.ctx, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
