@@ -64,11 +64,11 @@ The `add()` function adds a notification to the notification area of the phone. 
 Setting up the options Object:
 ```
 var options = {
-    	seconds: int,
-    	ticker: string, //Android only & Optional
-    	title: string, //Android only & Optional
-    	icon: string //Android only & Optional
-    	message: string, 
+	seconds: int,
+	ticker: string, //Android only & Optional
+	title: string, //Android only & Optional
+	icon: string //Android only & Optional
+	message: string, 
 	badge: int
 };
 ```
