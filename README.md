@@ -1,7 +1,6 @@
 # phonegap-plugin-localNotifications
 
-- PhoneGap Version : 3.0
-- last update : 24/03/2014
+- PhoneGap Version : 3.x
 
 # Description
 
