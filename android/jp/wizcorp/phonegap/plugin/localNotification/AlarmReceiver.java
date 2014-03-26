@@ -23,6 +23,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 	public static final String SUBTITLE = "ALARM_SUBTITLE";
 	public static final String TICKER_TEXT = "ALARM_TICKER";
 	public static final String NOTIFICATION_ID = "NOTIFICATION_ID";
+	public static final String ICON = "ALARM_ICON";
 
 	/* Contains time in 24hour format 'HH:mm' e.g. '04:30' or '18:23' */
 	public static final String HOUR_OF_DAY = "HOUR_OF_DAY";
@@ -32,31 +33,29 @@ public class AlarmReceiver extends BroadcastReceiver {
 	public void onReceive(Context context, Intent intent) {
 		Log.d("AlarmReceiver", "AlarmReceiver invoked!");
 
-		final Bundle bundle = intent.getExtras();
-		final Object systemService = context.getSystemService(Context.NOTIFICATION_SERVICE);
-
-		// Retrieve notification details from the intent
-		final String tickerText = bundle.getString(TICKER_TEXT);
-		final String notificationTitle = bundle.getString(TITLE);
-		final String notificationSubText = bundle.getString(SUBTITLE);
+		Bundle bundle = intent.getExtras();
+		NotificationManager notificationMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+		PendingIntent contentIntent = PendingIntent.getActivity(context, 0, new Intent(context, LocalNotification.class), 0);
 		int notificationId = 0;
 
 		try {
 			notificationId = Integer.parseInt(bundle.getString(NOTIFICATION_ID));
 		} catch (Exception e) {
 			Log.e("AlarmReceiver", "Unable to process alarm with id: " + bundle.getString(NOTIFICATION_ID));
-            Log.e("LocalNotification", "Unable to process alarm with id: " + bundle.getString(NOTIFICATION_ID));
+            Log.e(LocalNotification.TAG, "Unable to process alarm with id: " + bundle.getString(NOTIFICATION_ID));
 		}
+		
+		Notification notification = new Notification.Builder(context)
+			.setSmallIcon(bundle.getInt(ICON))
+			.setContentTitle(bundle.getString(TITLE))
+			.setContentText(bundle.getString(SUBTITLE))
+			.setTicker(bundle.getString(TICKER_TEXT))
+			.setContentIntent(contentIntent)
+			.setVibrate(new long[] { 0, 100, 200, 300 })
+			.setWhen(System.currentTimeMillis())
+			.build();
 
-		// Construct the notification and notificationManager objects
-		final NotificationManager notificationMgr = (NotificationManager) systemService;
-		final Notification notification = new Notification(android.R.drawable.star_big_on, tickerText,
-				System.currentTimeMillis());
-		final PendingIntent contentIntent = PendingIntent.getActivity(context, 0, new Intent(context, LocalNotification.class), 0);
-		notification.defaults |= Notification.DEFAULT_SOUND;
-		notification.vibrate = new long[] { 0, 100, 200, 300 };
-		notification.setLatestEventInfo(context, notificationTitle, notificationSubText, contentIntent);
-
+		Log.d(LocalNotification.TAG, "Notification Instantiated: Title: " + bundle.getString(TITLE) + ", Sub Title: " + bundle.getString(SUBTITLE) + ", Ticker Text: " + bundle.getString(TICKER_TEXT));
 		/*
 		 * If you want all reminders to stay in the notification bar, you should
 		 * generate a random ID. If you want do replace an existing
@@ -64,6 +63,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 		 * the alarm intent.
 		 */
 		notificationMgr.notify(notificationId, notification);
+		Log.d(LocalNotification.TAG, "Notification created!");
 
         // Notify JavaScript
         // NOTE: It is very difficult to know if our app is in the background or not, we will send active: true

@@ -11,6 +11,8 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.util.Log;
 
+import java.lang.Exception;
+
 /**
  * This plugin utilizes the Android AlarmManager in combination with StatusBar
  * notifications. When a local notification is scheduled the alarm manager takes
@@ -24,29 +26,20 @@ public class LocalNotification extends CordovaPlugin {
 
     public static final String TAG = "LocalNotification";
     public static CordovaWebView _webview;
-
-    /**
-     * Delegate object that does the actual alarm registration. Is reused by the
-     * AlarmRestoreOnBoot class.
-     */
     private AlarmHelper alarm = null;
 
     @Override
     public void initialize(org.apache.cordova.CordovaInterface cordova, org.apache.cordova.CordovaWebView webView) {
         // Keep a pointer to the WebView so we can emit JS Event when getting a notification
-        _webview = webView;
+        this._webview = webView;
         super.initialize(cordova, webView);
     }
 
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
-        Log.d(TAG, "Plugin execute called with action: " + action);
-        alarm = new AlarmHelper(cordova.getActivity().getApplicationContext());
-
-		/*
-		 * Determine which action of the plugin needs to be invoked
-		 */
         String alarmId;
+        this.alarm = new AlarmHelper(cordova.getActivity().getApplicationContext());
+        
 		try {
             alarmId = args.getString(0);
 		} catch (Exception e) {
@@ -57,25 +50,42 @@ public class LocalNotification extends CordovaPlugin {
 
 		if (action.equalsIgnoreCase("addNotification")) {
 
-			try {
-				final String title = "Alert";
-			    final String subTitle = args.getJSONObject(1).getString("message");
-			    final String ticker = args.getJSONObject(1).getString("message");
-			    
-			    long seconds = System.currentTimeMillis();
-			    Log.d(TAG, "Current time: " + seconds);
-			    seconds = seconds + (args.getJSONObject(1).getLong("seconds") * 1000);
-			    Log.d(TAG, "Alarm time: " + seconds);
-			    
+			try {			    
+			    long seconds = System.currentTimeMillis() + (args.getJSONObject(1).getLong("seconds") * 1000);
+			    String title, ticker, icon;
+                int iconResource = 0;
+
+                title = ticker = icon = "";
+                try {
+                    title = args.getJSONObject(1).getString("title");
+                } catch (Exception e){}
+                try {
+                    ticker = args.getJSONObject(1).getString("ticker");
+                } catch (Exception e){}
+                try {
+                    icon = args.getJSONObject(1).getString("icon");
+                } catch (Exception e) {}
+
+
+                if(icon != "") {
+                    try {
+                        iconResource = cordova.getActivity().getResources().getIdentifier(icon, "drawable", cordova.getActivity().getPackageName());
+                    } catch(Exception e) {
+                        Log.e(this.TAG, "The icon resource couldn't be found. Taking default icon.");
+                    }
+                }
+
 			    persistAlarm(alarmId, args);
-			    return this.add(callbackContext, title, subTitle, ticker, "" + alarmId, seconds);
+			    return this.add(callbackContext, title == "" ? "Notification" : title,
+			    		args.getJSONObject(1).getString("message"), ticker == "" ? args.getJSONObject(1).getString("message") : ticker,
+			    		alarmId.toString(), iconResource == 0 ? android.R.drawable.btn_star_big_on : iconResource, seconds);
 			} catch (Exception e) {
 				Log.e(TAG, "Exception: " + e);
 			}
 		    
 		} else if (action.equalsIgnoreCase("cancelNotification")) {
-		    unpersistAlarm("" + alarmId);
-		    return this.cancelNotification(callbackContext, "" + alarmId);
+		    unpersistAlarm(alarmId);
+		    return this.cancelNotification(callbackContext, alarmId);
 		} else if (action.equalsIgnoreCase("cancelAllNotifications")) {
 		    unpersistAlarmAll();
 		    return this.cancelAllNotifications(callbackContext);
@@ -101,13 +111,10 @@ public class LocalNotification extends CordovaPlugin {
      *            should first be started
      */
     public Boolean add(CallbackContext callbackContext, String alarmTitle, String alarmSubTitle, String alarmTicker,
-	    String alarmId, long seconds) {
-    	final long triggerTime = seconds;
+	    String alarmId, int icon, long seconds) {
 
-    	Log.d(TAG, "Adding notification: '" + alarmTitle + alarmSubTitle + "' with id: "
-    			+ alarmId + " at timestamp: " + triggerTime);
-
-		boolean result = alarm.addAlarm(alarmTitle, alarmSubTitle, alarmTicker, alarmId, seconds);
+		boolean result = alarm.addAlarm(alarmTitle, alarmSubTitle, alarmTicker, alarmId, icon, seconds);
+		
 		if (result) {
 			callbackContext.success();
 			return true;
@@ -130,6 +137,7 @@ public class LocalNotification extends CordovaPlugin {
     	Log.d(TAG, "cancelNotification: Canceling event with id: " + notificationId);
 
 		boolean result = alarm.cancelAlarm(notificationId);
+		
 		if (result) {
 			callbackContext.success();
 			return true;
@@ -152,8 +160,9 @@ public class LocalNotification extends CordovaPlugin {
 		 * all our alarms to loop through these alarms and unregister them one
 		 * by one.
 		 */
-		final SharedPreferences alarmSettings = cordova.getActivity().getApplicationContext().getSharedPreferences(TAG, Context.MODE_PRIVATE);
-		final boolean result = alarm.cancelAll(alarmSettings);
+		boolean result = alarm.cancelAll(cordova.getActivity()
+											    .getApplicationContext()
+												.getSharedPreferences(TAG, Context.MODE_PRIVATE));
 	
 		if (result) {
 			callbackContext.success();
@@ -181,11 +190,12 @@ public class LocalNotification extends CordovaPlugin {
      * @return true when successful, otherwise false
      */
     private boolean persistAlarm(String alarmId, JSONArray optionsArr) {
-		final Editor alarmSettingsEditor = cordova.getActivity().getApplicationContext().getSharedPreferences(TAG, Context.MODE_PRIVATE).edit();
 	
-		alarmSettingsEditor.putString("" + alarmId, optionsArr.toString());
-	
-		return alarmSettingsEditor.commit();
+		return 	cordova.getActivity().getApplicationContext()
+									 .getSharedPreferences(TAG, Context.MODE_PRIVATE)
+									 .edit()
+									 .putString(alarmId.toString(), optionsArr.toString())
+									 .commit();
     }
 
     /**
@@ -197,11 +207,12 @@ public class LocalNotification extends CordovaPlugin {
      * @return true when successful, otherwise false
      */
     private boolean unpersistAlarm(String alarmId) {
-		final Editor alarmSettingsEditor = cordova.getActivity().getApplicationContext().getSharedPreferences(TAG, Context.MODE_PRIVATE).edit();
 	
-		alarmSettingsEditor.remove(alarmId);
-	
-		return alarmSettingsEditor.commit();
+		return cordova.getActivity().getApplicationContext()
+									.getSharedPreferences(TAG, Context.MODE_PRIVATE)
+									.edit()
+									.remove(alarmId)
+									.commit();
     }
 
     /**
@@ -210,10 +221,11 @@ public class LocalNotification extends CordovaPlugin {
      * @return true when successful, otherwise false
      */
     private boolean unpersistAlarmAll() {
-		final Editor alarmSettingsEditor = cordova.getActivity().getApplicationContext().getSharedPreferences(TAG, Context.MODE_PRIVATE).edit();
 	
-		alarmSettingsEditor.clear();
-	
-		return alarmSettingsEditor.commit();
+		return cordova.getActivity().getApplicationContext()
+									.getSharedPreferences(TAG, Context.MODE_PRIVATE)
+									.edit()
+									.clear()
+									.commit();
     }
 }
