@@ -8,6 +8,16 @@ PhoneGap plugin for providing native local notification system to JavaScript.
 
 ** NOTE: Notification queuing is iOS ONLY.**
 
+#### Android 2.x Support
+
+To run on Android 2.x you will need to add the following yourself:
+
+In `AlarmReceiver.java` add;
+
+- Add `android-support-v13.java` to your project. This can be found in your Android SDK.
+- `import android.support.v4.app.NotificationCompat;`
+- Replace `Notification notification = new Notification.Builder(context)` with `Notification notification = new NotificationCompat.Builder(context)`
+
 # Credits
 
 Respect to Greg Allen 2011 -  Copyright (c) MIT Licensed
