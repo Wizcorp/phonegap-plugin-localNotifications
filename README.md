@@ -141,11 +141,10 @@ localNotification.getApplicationBadge(function(badgeValue){
 });
 ```
 
-### `launch(func stdLaunch, func ntfLaunch)`
+### Receiving Notification Events 
 
-Registers the function on the app launch event. When the user launches the application through a notification the event gets triggered.
+Registers the function on document. When the user launches the application through a notification the event gets triggered (Android does not receive this event on cold application launch, but does on background launch).
 
 ```
-	stdLaunch: The standard launch function.
-	ntfLaunch: the function to be used when application has been launched through a notification.
+	document.addEventListener("receivedLocalNotification", onReceivedLocalNotification, false);
 ```
