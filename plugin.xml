@@ -2,7 +2,7 @@
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
     id="jp.wizcorp.phonegap.plugin.localNotificationPlugin"
-    version="1.0.0">
+    version="2.0.0">
 
     <name>Local Notification Plugin</name>
     
@@ -45,15 +45,15 @@
     	</receiver>
     </config-file>
 
-    <source-file src="android/jp/wizcorp/phonegap/plugin/localNotification/LocalNotification.java" 
+    <source-file src="platforms/android/src/jp/wizcorp/phonegap/plugin/localNotification/LocalNotification.java" 
             target-dir="src/jp/wizcorp/phonegap/plugin/localNotification"/>
-    <source-file src="android/jp/wizcorp/phonegap/plugin/localNotification/AlarmHelper.java" 
+    <source-file src="platforms/android/src/jp/wizcorp/phonegap/plugin/localNotification/AlarmHelper.java" 
             target-dir="src/jp/wizcorp/phonegap/plugin/localNotification"/> 
-            <source-file src="android/jp/wizcorp/phonegap/plugin/localNotification/AlarmOptions.java" 
+            <source-file src="platforms/android/src/jp/wizcorp/phonegap/plugin/localNotification/AlarmOptions.java" 
             target-dir="src/jp/wizcorp/phonegap/plugin/localNotification"/> 
-            <source-file src="android/jp/wizcorp/phonegap/plugin/localNotification/AlarmReceiver.java" 
+            <source-file src="platforms/android/src/jp/wizcorp/phonegap/plugin/localNotification/AlarmReceiver.java" 
             target-dir="src/jp/wizcorp/phonegap/plugin/localNotification"/> 
-            <source-file src="android/jp/wizcorp/phonegap/plugin/localNotification/AlarmRestoreOnBoot.java" 
+            <source-file src="platforms/android/src/jp/wizcorp/phonegap/plugin/localNotification/AlarmRestoreOnBoot.java" 
             target-dir="src/jp/wizcorp/phonegap/plugin/localNotification"/> 
     </platform>
     
@@ -69,11 +69,11 @@
         </config-file>
                
         <!-- Plugin files -->
-        <header-file src="ios/project/Plugins/LocalNotification/LocalNotification.h" />
-        <source-file src="ios/project/Plugins/LocalNotification/LocalNotification.m" compiler-flags="-fno-objc-arc" />
+        <header-file src="platforms/ios/HelloCordova/Plugins/LocalNotification/LocalNotification.h" />
+        <source-file src="platforms/ios/HelloCordova/Plugins/LocalNotification/LocalNotification.m" compiler-flags="-fno-objc-arc" />
 
         <!-- Custom Logger -->
-        <header-file src="ios/project/Plugins/LocalNotification/WizDebugLog.h"
+        <header-file src="platforms/ios/HelloCordova/Plugins/LocalNotification/WizDebugLog.h"
         	target-dir="WizCanvas" />
 
     </platform>

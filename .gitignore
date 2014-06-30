@@ -1,21 +1,16 @@
-.DS_Store
+# OS X
+*.DS_Store
 
-#iOS
-example/ios/exampleLocalNotifications.xcodeproj/xcuserdata/*
-example/ios/exampleLocalNotifications.xcodeproj/project.xcworkspace/*
-example/ios/CordovaLib/CordovaLib.xcodeproj/xcuserdata/*
-example/ios/www/*
-!example/ios/www/cordova.js
-!example/ios/www/cordova_plugins.js
-!example/ios/www/phonegap/plugin/localNotification/localNotification.js
+# Xcode
+*.xcworkspace
+xcuserdata
 
-#Android
-example/android/bin/*
-example/android/gen/*
-example/android/.classpath
-example/android/local.properties
+# Android
+.idea/
+bin/
+gen/
 *.iml
-*.idea
-example/android/build/*
-example/android/out/*
-
+*.iws
+out/
+local.properties
+log/
