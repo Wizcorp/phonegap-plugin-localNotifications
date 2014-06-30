@@ -1,5 +1,9 @@
 package jp.wizcorp.phonegap.plugin.localNotification;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
+import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -65,9 +69,13 @@ public class AlarmReceiver extends BroadcastReceiver {
 		notificationMgr.notify(notificationId, notification);
 		Log.d(LocalNotification.TAG, "Notification created!");
 
-        // Notify JavaScript
-        // NOTE: It is very difficult to know if our app is in the background or not, we will send active: true
-        // the most important thing is to inform JavaScript that the event was triggered.
-        LocalNotification.getCordovaWebView().sendJavascript("cordova.fireDocumentEvent('receivedLocalNotification', { active : true, notificationId : " + notificationId + " })");
+		// Notify JavaScript
+		// NOTE: Currently JS in Android is not notified if the application receives a notification when application is closed state
+
+		// If we are in background state we still have access to Cordova WebView
+		if (LocalNotification.getCordovaWebView() != null) {
+			// Send JS a message
+			LocalNotification.getCordovaWebView().sendJavascript("cordova.fireDocumentEvent('receivedLocalNotification', { active : true, notificationId : " + notificationId + " })");
+		}
 	}
 }
