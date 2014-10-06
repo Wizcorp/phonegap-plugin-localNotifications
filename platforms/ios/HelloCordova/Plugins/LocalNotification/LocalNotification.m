@@ -16,6 +16,8 @@
 #import "LocalNotification.h"
 #import "WizDebugLog.h"
 
+#define LOCAL_NOTIFICATION_SYSTEM_VERSION_GREATER_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
+
 @interface LocalNotification ()
 @property (nonatomic, retain) NSMutableDictionary *notificationQueue;
 + (void)load;
@@ -92,11 +94,18 @@ static UILocalNotification *localNotification = nil;
 -(CDVPlugin*) initWithWebView:(UIWebView*)theWebView
 {
     
-    self = (LocalNotification*)[super initWithWebView:theWebView];
+    self = (LocalNotification *)[super initWithWebView:theWebView];
     
     // initiate empty Notification Queue
     self.notificationQueue = [[NSMutableDictionary alloc ] init];
-    
+
+    // Check if iOS 8, then request notification permissions
+    if (LOCAL_NOTIFICATION_SYSTEM_VERSION_GREATER_OR_EQUAL_TO(@"8.0")) {
+        [[UIApplication sharedApplication] registerUserNotificationSettings:
+         [UIUserNotificationSettings settingsForTypes:
+          (UIUserNotificationTypeAlert | UIUserNotificationTypeBadge | UIUserNotificationTypeSound) categories:NULL]];
+    }
+
     // Register the instance to observe CDVLocalNotification notifications
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(notificationReceived:)
@@ -126,10 +135,19 @@ static UILocalNotification *localNotification = nil;
     }
 }
 
-- (void)addNotification:(CDVInvokedUrlCommand*)command {
+- (void)addNotification:(CDVInvokedUrlCommand *)command {
 	
-    // NO callbacks
-    
+    // Check current user notification settings on iOS8
+    if (LOCAL_NOTIFICATION_SYSTEM_VERSION_GREATER_OR_EQUAL_TO(@"8.0")) {
+        UIUserNotificationSettings *una = [[UIApplication sharedApplication] currentUserNotificationSettings];
+        if (una.types != (UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge)) {
+            // We cannot send a notification, the user has blocked notifications
+            CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"USER_DISABLED"];
+            [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+            return;
+        }
+    }
+
     NSDictionary *options = [command.arguments objectAtIndex:1];
     
     int seconds                 = [[options objectForKey:@"seconds"] intValue];
@@ -177,20 +195,34 @@ static UILocalNotification *localNotification = nil;
     // now schedule new one
     NSLog(@"Notification Set: %@ (ID: %@, Badge: %i)", date , notificationId, badge);
     [[UIApplication sharedApplication] scheduleLocalNotification:notif];
-    
+
 	[notif release];
-    
+
+    CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
 }
 
 
 - (void)queueNotification:(CDVInvokedUrlCommand*)command {
+
+    // Check current user notification settings on iOS8
+    if (LOCAL_NOTIFICATION_SYSTEM_VERSION_GREATER_OR_EQUAL_TO(@"8.0")) {
+        UIUserNotificationSettings *una = [[UIApplication sharedApplication] currentUserNotificationSettings];
+        if (una.types != (UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge)) {
+            // We cannot send a notification, the user has blocked notifications
+            CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"USER_DISABLED"];
+            [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+            return;
+        }
+    }
     WizLog(@"[queueNotification] ------- adding notification to queue ");
     NSDictionary *options = [command.arguments objectAtIndex:1];
     // store notifications in notificationQueue dictionary
     NSString *notificationId    = [NSString stringWithFormat:@"%@", [command.arguments objectAtIndex:0]];
     [self.notificationQueue setObject:options forKey:notificationId];
-    
 
+    CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
 }
 
 - (void)notificationReceived:(NSNotification *)notification {
@@ -214,13 +246,12 @@ static UILocalNotification *localNotification = nil;
 
 - (void)emptyNotificationQueue:(NSNotification *)notification {
     
-    LocalNotification* _localNotification = [[LocalNotification alloc] init];
-    
+    LocalNotification *_localNotification = [[LocalNotification alloc] init];
+
     // Add all notifications from the notificationQueue dictionary and empty it
-    for (NSString* key in self.notificationQueue) {
-        
+    for (NSString *key in self.notificationQueue) {
         NSMutableDictionary* notificationDict = [[NSMutableDictionary alloc] initWithDictionary:[self.notificationQueue objectForKey:key]];
-        NSArray* notificationArray = [[NSArray alloc] initWithObjects:key, notificationDict, nil];
+        NSArray *notificationArray = [[NSArray alloc] initWithObjects:key, notificationDict, nil];
         WizLog(@"Notification in queue adding : %@", notificationArray);
 
         CDVInvokedUrlCommand *cmd = [[CDVInvokedUrlCommand alloc] initWithArguments:notificationArray callbackId:@"" className:@"LocalNotification" methodName:@"addNotification"];
@@ -228,16 +259,12 @@ static UILocalNotification *localNotification = nil;
         [cmd release];
         [notificationArray release];
         [notificationDict release];
-        
     }
     
     // empty it
     [self.notificationQueue removeAllObjects];
-    
+
     [_localNotification release];
-    
-    
-    
 }
 
 - (void)cancelNotification:(CDVInvokedUrlCommand*)command {
@@ -259,8 +286,6 @@ static UILocalNotification *localNotification = nil;
         WizLog(@"Notification Canceled not enough params. Missing ID");
         
     }
-    
-    
 }
 
 - (void)cancelAllNotifications:(CDVInvokedUrlCommand*)command {
@@ -272,7 +297,7 @@ static UILocalNotification *localNotification = nil;
 
 - (void)getApplicationBadge:(CDVInvokedUrlCommand*)command
 {
-    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
                                                          messageAsInt:[UIApplication sharedApplication].applicationIconBadgeNumber];
     
     [self writeJavascript: [pluginResult toSuccessCallbackString:command.callbackId]];
@@ -285,7 +310,7 @@ static UILocalNotification *localNotification = nil;
 
     // Invoke callback method if it was specified.
     if ( ![command.callbackId isEqualToString:@"INVALID"] ) {
-        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self writeJavascript: [pluginResult toSuccessCallbackString:command.callbackId]];
     }
 }
