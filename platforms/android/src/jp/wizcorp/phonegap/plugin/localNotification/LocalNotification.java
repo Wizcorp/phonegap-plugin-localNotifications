@@ -7,8 +7,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.util.Log;
 
 import java.lang.Exception;
@@ -67,11 +65,11 @@ public class LocalNotification extends CordovaPlugin {
                 } catch (Exception e) {}
 
 
-                if(icon != "") {
+                if (icon != "") {
                     try {
                         iconResource = cordova.getActivity().getResources().getIdentifier(icon, "drawable", cordova.getActivity().getPackageName());
                     } catch(Exception e) {
-                        Log.e(this.TAG, "The icon resource couldn't be found. Taking default icon.");
+                        Log.e(TAG, "The icon resource couldn't be found. Taking default icon.");
                     }
                 }
 

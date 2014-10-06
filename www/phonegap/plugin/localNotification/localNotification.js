@@ -1,7 +1,7 @@
 /**
  * 
  * @author Ally Ogilvie
- * @copyright Wizcorp Inc. [ Incorporated Wizards ] 2013
+ * @copyright Wizcorp Inc. [ Incorporated Wizards ] 2014
  * @file localNotification.js for PhoneGap
  *
  */
@@ -17,8 +17,8 @@ if (window.cordova) {
 var LocalNotification = function () {};
 
 
-LocalNotification.prototype.add = function (id, options) {
-		exec(null, null, "LocalNotification", "addNotification", [id, options]);
+LocalNotification.prototype.add = function (id, options, success, failure) {
+		exec(success, failure, "LocalNotification", "addNotification", [id, options]);
 	};
 
 LocalNotification.prototype.cancel = function (id) {
@@ -29,9 +29,8 @@ LocalNotification.prototype.cancelAll = function () {
         exec(null, null,"LocalNotification", "cancelAllNotifications", []);
     };
     
-LocalNotification.prototype.queue = function (id, options) {
-        
-		exec(null, null, "LocalNotification", "queueNotification", [id, options]);
+LocalNotification.prototype.queue = function (id, options, success, failure) {
+		exec(success, failure, "LocalNotification", "queueNotification", [id, options]);
 	};
 
 LocalNotification.prototype.getApplicationBadge = function (s) {
