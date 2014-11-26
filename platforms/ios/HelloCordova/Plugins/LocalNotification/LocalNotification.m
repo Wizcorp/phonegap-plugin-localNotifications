@@ -79,8 +79,13 @@ static UILocalNotification *localNotification = nil;
 
 -(CDVPlugin *)initWithWebView:(UIWebView *)theWebView {
     
-    self = (LocalNotification*)[super initWithWebView:theWebView];
+    self = (LocalNotification *)[super initWithWebView:theWebView];
 
+    if ([UIApplication instancesRespondToSelector:@selector(registerUserNotificationSettings:)]) {
+        UIUserNotificationType types = UIUserNotificationTypeSound | UIUserNotificationTypeBadge | UIUserNotificationTypeAlert;
+        UIUserNotificationSettings *notificationSettings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
+        [[UIApplication sharedApplication] registerUserNotificationSettings:notificationSettings];
+    }
     // initiate empty Notification Queue
     self.notificationQueue = [[NSMutableDictionary alloc ] init];
 
