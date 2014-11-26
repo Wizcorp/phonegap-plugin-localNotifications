@@ -236,7 +236,7 @@ static UILocalNotification *localNotification = nil;
 - (void)getApplicationBadge:(CDVInvokedUrlCommand *)command{
     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
                                                          messageAsInt:[UIApplication sharedApplication].applicationIconBadgeNumber];
-    [self writeJavascript: [pluginResult toSuccessCallbackString:command.callbackId]];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
 - (void)setApplicationBadge:(CDVInvokedUrlCommand *)command {
@@ -246,7 +246,7 @@ static UILocalNotification *localNotification = nil;
     // Invoke callback method if it was specified.
     if ( ![command.callbackId isEqualToString:@"INVALID"] ) {
         CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-        [self writeJavascript: [pluginResult toSuccessCallbackString:command.callbackId]];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }
 }
 
