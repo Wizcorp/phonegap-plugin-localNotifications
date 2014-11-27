@@ -81,16 +81,11 @@ static UILocalNotification *localNotification = nil;
     
     self = (LocalNotification *)[super initWithWebView:theWebView];
 
-    if ([UIApplication instancesRespondToSelector:@selector(registerUserNotificationSettings:)]) {
-        UIUserNotificationType types = UIUserNotificationTypeSound | UIUserNotificationTypeBadge | UIUserNotificationTypeAlert;
-        UIUserNotificationSettings *notificationSettings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
-        [[UIApplication sharedApplication] registerUserNotificationSettings:notificationSettings];
-    }
     // initiate empty Notification Queue
     self.notificationQueue = [[NSMutableDictionary alloc ] init];
 
     // Check if iOS 8, then request notification permissions
-    if (LOCAL_NOTIFICATION_SYSTEM_VERSION_GREATER_OR_EQUAL_TO(@"8.0")) {
+    if ([UIApplication instancesRespondToSelector:@selector(registerUserNotificationSettings:)]) {
         [[UIApplication sharedApplication] registerUserNotificationSettings:
          [UIUserNotificationSettings settingsForTypes:
           (UIUserNotificationTypeAlert | UIUserNotificationTypeBadge | UIUserNotificationTypeSound) categories:NULL]];
@@ -182,7 +177,7 @@ static UILocalNotification *localNotification = nil;
 - (void)queueNotification:(CDVInvokedUrlCommand*)command {
 
     // Check current user notification settings on iOS8
-    if (LOCAL_NOTIFICATION_SYSTEM_VERSION_GREATER_OR_EQUAL_TO(@"8.0")) {
+    if ([UIApplication instancesRespondToSelector:@selector(registerUserNotificationSettings:)]) {
         UIUserNotificationSettings *una = [[UIApplication sharedApplication] currentUserNotificationSettings];
         if (una.types != (UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge)) {
             // We cannot send a notification, the user has blocked notifications
