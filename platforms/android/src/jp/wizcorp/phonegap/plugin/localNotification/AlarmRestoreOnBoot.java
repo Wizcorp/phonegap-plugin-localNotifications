@@ -1,7 +1,6 @@
 package jp.wizcorp.phonegap.plugin.localNotification;
 
 import java.util.Map;
-import java.util.Set;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,11 +24,12 @@ public class AlarmRestoreOnBoot extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         // Obtain alarm details form Shared Preferences
         SharedPreferences alarmSettings = context.getSharedPreferences(LocalNotification.TAG, Context.MODE_PRIVATE);
-        final AlarmHelper alarm = new AlarmHelper(context);
+        final AlarmHelper alarm = new AlarmHelper();
+        alarm.setContext(context);
         final Map<String, ?> allAlarms = alarmSettings.getAll();
 
         /*
-         * For each alarm, parse its alarm options and register is again with
+         * For each alarm, parse its alarm options and register it again with
          * the Alarm Manager
          */
         for (String alarmId : allAlarms.keySet()) {
