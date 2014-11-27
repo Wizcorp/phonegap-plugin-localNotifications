@@ -1,9 +1,5 @@
 package jp.wizcorp.phonegap.plugin.localNotification;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
-import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -39,16 +35,22 @@ public class AlarmReceiver extends BroadcastReceiver {
 
 		Bundle bundle = intent.getExtras();
 		NotificationManager notificationMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-		PendingIntent contentIntent = PendingIntent.getActivity(context, 0, new Intent(context, LocalNotification.class), 0);
-		int notificationId = 0;
 
+		// Get notification Id
+		int notificationId = 0;
 		try {
 			notificationId = Integer.parseInt(bundle.getString(NOTIFICATION_ID));
 		} catch (Exception e) {
-			Log.e("AlarmReceiver", "Unable to process alarm with id: " + bundle.getString(NOTIFICATION_ID));
-            Log.e(LocalNotification.TAG, "Unable to process alarm with id: " + bundle.getString(NOTIFICATION_ID));
+			Log.e(LocalNotification.TAG, "Unable to process alarm with id: " + bundle.getString(NOTIFICATION_ID));
 		}
-		
+
+		// Create onClick for toast notification
+		Intent onClick = new Intent(context, AlarmHelper.class)
+			.putExtra(AlarmReceiver.NOTIFICATION_ID, notificationId);
+		// Create pending intent for onClick
+		PendingIntent contentIntent = PendingIntent.getActivity(context, 0, onClick, PendingIntent.FLAG_CANCEL_CURRENT);
+
+		// Build Notification
 		Notification notification = new Notification.Builder(context)
 			.setSmallIcon(bundle.getInt(ICON))
 			.setContentTitle(bundle.getString(TITLE))
@@ -69,8 +71,8 @@ public class AlarmReceiver extends BroadcastReceiver {
 		notificationMgr.notify(notificationId, notification);
 		Log.d(LocalNotification.TAG, "Notification created!");
 
-		// Notify JavaScript
-		// NOTE: Currently JS in Android is not notified if the application receives a notification when application is closed state
+		// NOTE: If the application is closed state, JS gets the notification when the application is opened from tapping the notification
+		// see AlarmHelper.java
 
 		// If we are in background state we still have access to Cordova WebView
 		if (LocalNotification.getCordovaWebView() != null) {
