@@ -351,7 +351,16 @@
             alert("Could not find localNotification");
         }
 	}
-        
+
+    var successCb = function () {
+        // Generic callback function
+        console.log("API success");
+    }
+
+    var failureCb = function (error) {
+        // Generic callback function
+        alert(error);
+    }
     function addNotification( scheduleImmediately ) {
         var msg = prompt("Please enter a notification message:","test");
         if ( msg ) {
@@ -365,11 +374,15 @@
                         "badge" : badge,
                     };
                     if ( scheduleImmediately ) {
-                        window.localNotification.add("GAME_NOTIFICATION", options);
-                        alert("Successfully scheduled:\n" + JSON.stringify(options));
+                        window.localNotification.add("GAME_NOTIFICATION", options, function () {
+                            alert("Successfully scheduled:\n" + JSON.stringify(options));
+                            successCb();
+                        }, failureCb);
                     } else {
-                        window.localNotification.queue("COME_BACK_AND_PLAY", options);
-                        alert("Successfully queued (will be scheduled after quitting the app):\n" + JSON.stringify(options));
+                        window.localNotification.queue("COME_BACK_AND_PLAY", options, function () {
+                            alert("Successfully queued (will be scheduled after quitting the app):\n" + JSON.stringify(options));
+                            successCb();
+                        }, failureCb);
                     }
                 }
             }

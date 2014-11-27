@@ -54,6 +54,7 @@ Android
 The root class for the localNotification plugin is: `localNotification` every function descibed below has been defined within the `localNotification` class.
 
 For example the `add()` function can be called like this:
+
 ```
 localNotification.add(103, {
 	seconds: 30,
@@ -61,7 +62,7 @@ localNotification.add(103, {
 	badge: 1});
 ```
 
-### `add(int id, JSONObject options)`
+### `add(int id, JSONObject options, Function success, Function failure)`
 
 The `add()` function adds a notification to the notification area of the phone. Do note that adding a notification with the exact same notification id twice will replace the first notification.
 
@@ -71,6 +72,7 @@ The `add()` function adds a notification to the notification area of the phone. 
 ```
 
 Setting up the options Object:
+
 ```
 var options = {
 	seconds: int,
@@ -84,7 +86,9 @@ var options = {
 
 The `icon` property has to reference to the name of a drawable resource in your Android project. If you leave the `title`, `ticker` or `icon` empty they will become default values.
 
-### `queue(int id, JSONObject options)`
+`success` and `failure` refer to function callbacks. A failure will trigger if the user has not enabled local notifications - **iOS 8 ONLY**. Otherwise a success is returned.
+
+### `queue(int id, JSONObject options, Function success, Function failure)`
 
 **NOTE: Queuing is currently iOS ONLY.**
 
@@ -96,6 +100,7 @@ The `queue()` function queue's a notification to be sent to the notification are
 ```
 
 Setting up the options Object:
+
 ```
 	var options = {
     		seconds: 30, 
@@ -103,7 +108,9 @@ Setting up the options Object:
     		badge: 1 
 	};
 ```
-	
+
+`success` and `failure` refer to function callbacks. A failure will trigger if the user has not enabled local notifications - **iOS 8 ONLY**. Otherwise a success is returned.
+
 ### `cancel(int id)`
 
 Cancels the notification the given notification id.

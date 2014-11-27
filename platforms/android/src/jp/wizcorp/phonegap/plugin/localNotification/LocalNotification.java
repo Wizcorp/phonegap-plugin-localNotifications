@@ -79,7 +79,7 @@ public class LocalNotification extends CordovaPlugin {
                 } catch (Exception e) {}
 
 
-                if(icon != "") {
+                if (icon != "") {
                     try {
                         iconResource = cordova.getActivity().getResources().getIdentifier(icon, "drawable", cordova.getActivity().getPackageName());
                     } catch(Exception e) {
